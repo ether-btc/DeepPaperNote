@@ -197,7 +197,7 @@ def source_section_key(record: dict[str, Any]) -> str:
         for section, aliases in SECTION_ALIASES.items():
             if normalized == section or normalized in aliases:
                 return section
-        if normalized in {"appendix", "appendices", "supplementary material", "附录", "补充材料"}:
+        if normalized in {"appendix", "appendices", "supplementary material", "Appendix", "Supplementary material"}:
             return "appendix"
     kind = normalize_whitespace(str(record.get("kind", ""))).lower()
     return kind if kind else ""

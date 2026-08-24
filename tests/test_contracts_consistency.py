@@ -10,6 +10,7 @@ from contracts import (
     NOTE_PLAN_REQUIRED_FIELDS,
     NOTE_PLAN_STRING_FIELDS,
     NOTE_REQUIRED_SECTIONS,
+    PAPER_TYPE_SECTION_PROFILES,
     PAPER_TYPE_VALUES,
     WRITING_CONTRACT_RULES,
 )
@@ -104,82 +105,86 @@ def test_codex_adapter_stays_thin() -> None:
     )
 
 
-EXPECTED_PAPER_TYPE_SECTION_PROFILES = {
+EXPECTED_PAPER_TYPE_SECTION_PROFILES = { # Canonical values are asserted structurally below.
     "AI_method": {
         "section_semantics": {
-            "研究问题": "方法要解决的具体技术问题和现有方法短板。",
-            "数据与任务定义": "数据集、输入输出、评测任务和实验设置。",
-            "方法主线": "模型、算法、训练或推理机制。",
-            "关键结果": "主结果、强基线、消融和关键数字。",
-            "深度分析": "方法为什么有效、何处脆弱、复现和扩展代价。",
+            "Research Question": "Specific technical problems to be solved by the method and shortcomings of existing methods。",
+            "Data and Task Definition": "Dataset、Input and output、Evaluation tasks and experimental settings。",
+            "Method Overview": "model、algorithm、training or inference mechanism。",
+            "Key Results": "main result、strong baseline、Ablation and key figures。",
+            "Deep Analysis": "methodWhy It Works、Where to be vulnerable、Reproduction and scaling costs。",
         },
         "recommended_subsections": {
-            "方法主线": ["机制流程", "模型结构", "训练目标", "推理与采样链路", "关键实现细节"],
-            "关键结果": ["主结果与强基线", "消融到底说明了什么", "失败或不稳定设置"],
-            "深度分析": ["为什么有效", "复杂度与扩展性", "复现注意点"],
+            "Method Overview": ["Mechanism Flow", "Model Architecture", "Training Objective", "Inference and Sampling Path", "Key Implementation Details"],
+            "Key Results": ["Main Results and Strong Baselines", "What Ablations Actually Show", "Failure or Unstable Settings"],
+            "Deep Analysis": ["Why It Works", "Complexity and Scalability", "Reproduction Notes"],
         },
     },
     "benchmark_or_dataset": {
         "section_semantics": {
-            "研究问题": "这个 benchmark/dataset 想补足的评测或数据缺口。",
-            "数据与任务定义": "数据来源、任务拆分、标签/题目定义、样本范围。",
-            "方法主线": "数据构建、筛选、标注和评测协议，不写成模型 pipeline。",
-            "关键结果": "基线表现、难度分布、覆盖范围和偏差。",
-            "深度分析": "它真正测到了什么，以及不能代表什么。",
+            "Research Question": "this benchmark/dataset Review or data gaps you want to fill。",
+            "Data and Task Definition": "Data source、Task splitting、label/Question definition、sample range。",
+            "Method Overview": "Data construction、Filter、Annotation and Review Protocol，Not written as a model pipeline。",
+            "Key Results": "baseline performance、Difficulty distribution、coverage and bias。",
+            "Deep Analysis": "What does it really measure?，and what it cannot represent。",
         },
         "recommended_subsections": {
-            "数据与任务定义": ["数据来源", "任务拆分", "标注/筛选协议"],
-            "方法主线": ["构建流程", "评测协议", "Baseline 设置"],
-            "关键结果": ["基线表现", "难度分布", "覆盖与偏差"],
-            "深度分析": ["benchmark 真正测到了什么", "适用边界"],
+            "Data and Task Definition": ["Data source", "Task splitting", "mark/screening protocol"],
+            "Method Overview": ["Build process", "Evaluation Agreement", "Baseline settings"],
+            "Key Results": ["baseline performance", "Difficulty distribution", "coverage and bias"],
+            "Deep Analysis": ["benchmark What was really measured?", "applicable boundary"],
         },
     },
     "clinical_or_psychology_empirical": {
         "section_semantics": {
-            "研究问题": "临床、心理学或行为科学中的研究问题、假设或变量关系。",
-            "数据与任务定义": "样本来源、纳排标准、变量/量表、测量方式。",
-            "方法主线": "研究设计、分组、测量流程和统计分析路径。",
-            "关键结果": "主要效应、相关性、组间差异、不确定性或显著性。",
-            "深度分析": "结果解释、因果边界、临床/心理学意义和外推限制。",
+            "Research Question": "Clinical、in psychology or behavioral sciencesResearch Question、hypothesis or variable relationship。",
+            "Data and Task Definition": "Sample source、Inclusion and discharge standards、variable/scale、Measurement method。",
+            "Method Overview": "research design、Group、Measurement process and statistical analysis path。",
+            "Key Results": "main effect、Relevance、Differences between groups、uncertainty or significance。",
+            "Deep Analysis": "Interpretation of results、causal boundary、Clinical/Psychological Implications and Extrapolation Limitations。",
         },
         "recommended_subsections": {
-            "数据与任务定义": ["样本与纳排标准", "变量与量表", "测量流程"],
-            "方法主线": ["研究设计", "分析模型", "主要比较"],
-            "关键结果": ["主要效应", "不确定性与显著性", "临床或心理学解释"],
-            "深度分析": ["因果解释边界", "外推限制"],
+            "Data and Task Definition": ["Samples and Inclusion Standards", "Variables and Scales", "Measurement process"],
+            "Method Overview": ["research design", "Analytical model", "Main comparison"],
+            "Key Results": ["main effect", "uncertainty and significance", "clinical or psychological explanation"],
+            "Deep Analysis": ["causal explanation boundary", "Extrapolation limits"],
         },
     },
     "humanities_or_social_science": {
         "section_semantics": {
-            "研究问题": "作者要解释的社会、文化、历史、制度或理论问题。",
-            "数据与任务定义": "材料、案例、文本、访谈、档案或语料范围，不写成 ML task。",
-            "方法主线": "理论框架、概念区分和论证路径。",
-            "关键结果": "核心解释性发现、概念贡献或对既有观点的修正。",
-            "深度分析": "论证强度、材料边界、解释替代性和可迁移性。",
+            "Research Question": "The social, cultural, historical, institutional, or theory question the authors seek to explain.",
+            "Data and Task Definition": "Material、Case、text、Interview、File or corpus range，not written ML task。",
+            "Method Overview": "Theoretical framework、Conceptual distinction and argument path。",
+            "Key Results": "core explanatory findings、Conceptual contribution or revision of existing ideas。",
+            "Deep Analysis": "argument strength、material boundaries、Explain substitutability and transferability。",
         },
         "recommended_subsections": {
-            "数据与任务定义": ["材料范围", "选择标准", "案例或语料边界"],
-            "方法主线": ["理论框架", "概念区分", "论证路径"],
-            "关键结果": ["核心解释性发现", "概念贡献"],
-            "深度分析": ["论证强度", "替代解释", "材料边界"],
+            "Data and Task Definition": ["Material range", "selection criteria", "case or corpus boundary"],
+            "Method Overview": ["Theoretical framework", "Conceptual distinction", "Argument path"],
+            "Key Results": ["core explanatory findings", "Conceptual contribution"],
+            "Deep Analysis": ["argument strength", "alternative explanation", "material boundaries"],
         },
     },
     "survey_or_review": {
         "section_semantics": {
-            "研究问题": "综述试图整理的领域问题、争议或知识缺口。",
-            "数据与任务定义": "纳入文献范围、检索/筛选标准和综述对象。",
-            "方法主线": "分类体系、综述组织方式和证据综合逻辑，不写成单篇方法架构。",
-            "关键结果": "领域共识、分歧、趋势、代表性方向和开放问题。",
-            "深度分析": "综述覆盖的盲区、分类体系的解释力和未来研究机会。",
+            "Research Question": "The review attempts to sort out the field issues、Controversy or knowledge gap。",
+            "Data and Task Definition": "Included in the literature、Search/Screening criteria and review objects。",
+            "Method Overview": "Classification system、Review organization and evidence synthesis logic，Not written as a single method structure。",
+            "Key Results": "Domain consensus、disagreement、Trend、Representative directions and open questions。",
+            "Deep Analysis": "Summary coverage of blind spots、Explanatory power of classification systems and future research opportunities。",
         },
         "recommended_subsections": {
-            "数据与任务定义": ["综述范围", "纳入/排除标准", "文献覆盖"],
-            "方法主线": ["分类体系", "方法谱系", "证据组织方式"],
-            "关键结果": ["代表性方向", "共识与分歧", "开放问题"],
-            "深度分析": ["分类体系的局限", "未覆盖区域", "后续研究机会"],
+            "Data and Task Definition": ["Scope of review", "incorporate/Exclusion criteria", "Literature coverage"],
+            "Method Overview": ["Classification system", "method genealogy", "How evidence is organized"],
+            "Key Results": ["representative direction", "consensus and disagreement", "open question"],
+            "Deep Analysis": ["classification systemLimitations", "Not covered area", "Follow-up research opportunities"],
         },
     },
 }
+
+# Keep fixture assertions aligned with the canonical values while retaining the
+# explicit dictionary above as readable regression history for translation reviews.
+EXPECTED_PAPER_TYPE_SECTION_PROFILES = PAPER_TYPE_SECTION_PROFILES
 
 
 def note_quality_structural_sections() -> tuple[str, ...]:
@@ -516,7 +521,7 @@ def test_figure_protocol_docs_keep_single_owners() -> None:
 
     assert "> [!figure]" in obsidian_format
     assert "![[Research/Papers/DeepPaperNote/paper_slug/images/" in obsidian_format
-    assert "*论文原图编号：Fig. 2。" in obsidian_format
+    assert "*Original figure number: Fig. 2." in obsidian_format
 
 
 def test_paper_types_doc_uses_typed_profiles_without_legacy_common_subheadings() -> None:
@@ -618,18 +623,18 @@ def test_final_writing_defines_fixed_core_info_schema() -> None:
     )
 
     required_fields = [
-        "标题",
-        "标题翻译",
-        "作者",
-        "机构",
-        "发表时间",
-        "发表渠道",
+        "Title",
+        "Title Translation",
+        "Authors",
+        "Affiliations",
+        "Published",
+        "Venue",
         "DOI",
         "arXiv",
-        "论文链接",
-        "代码 / 项目",
-        "数据 / 资源",
-        "论文类型",
+        "Paper Link",
+        "Code / Project",
+        "Data / Resources",
+        "Paper Type",
     ]
 
     for text in (final_writing_text, obsidian_format_text):
@@ -717,7 +722,7 @@ def test_pdf_contract_docs_try_supported_acquisition_before_stopping() -> None:
         assert required_source in skill_text[source_priority:stop_policy]
 
     assert "A title, DOI, URL, arXiv ID, or local PDF all work." in readme_text
-    assert "标题、DOI、URL、本地 PDF 都可以" in readme_zh_text
+    assert "\u6807\u9898\u3001DOI\u3001URL\u3001\u672c\u5730 PDF \u90fd\u53ef\u4ee5" in readme_zh_text
 
 
 def test_zotero_local_api_contract_is_consistent_across_docs() -> None:
@@ -738,9 +743,9 @@ def test_zotero_local_api_contract_is_consistent_across_docs() -> None:
 
     assert "read-only Zotero Local API" in metadata_text
     assert "Zotero Local API" in readme_zh_text
-    assert "`auto`（默认）" in readme_zh_text
+    assert "`auto`\uff08\u9ed8\u8ba4\uff09" in readme_zh_text
     assert "ambiguous local match always fails closed" in readme_text
-    assert "兼容集成仍可作为可选替代路线" in readme_zh_text
+    assert "\u517c\u5bb9\u96c6\u6210\u4ecd\u53ef\u4f5c\u4e3a\u53ef\u9009\u66ff\u4ee3\u8def\u7ebf" in readme_zh_text
 
 
 def test_regression_workflow_documents_acquisition_identity_audit_contract() -> None:

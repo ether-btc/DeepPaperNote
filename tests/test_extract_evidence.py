@@ -852,8 +852,8 @@ def test_bundle_exposes_manifest_coverage_without_old_model_inputs() -> None:
                     "section_stop_page": 10,
                 },
                 "section_texts": {
-                    "method": "方法" * 6500,
-                    "experiment": "实验结果",
+                    "method": "method" * 6500,
+                    "experiment": "Experimental results",
                 },
                 "appendix_index": {
                     "appendix_detected": True,
@@ -1111,14 +1111,14 @@ def test_bundle_removes_top_n_evidence_and_uses_compact_contract() -> None:
     assert contract["grounding_contract"]["source_of_truth"] == "source_manifest"
     assert "section_id" in contract["grounding_contract"]["accepted_reference_forms"]
     assert "pages" in contract["grounding_contract"]["accepted_reference_forms"]
-    assert any("工程含义" in rule for rule in formula_rules)
-    assert method_contract["section_semantics"]["方法主线"] == "模型、算法、训练或推理机制。"
-    assert method_contract["recommended_subsections"]["方法主线"] == [
-        "机制流程",
-        "模型结构",
-        "训练目标",
-        "推理与采样链路",
-        "关键实现细节",
+    assert any("engineering meaning" in rule for rule in formula_rules)
+    assert method_contract["section_semantics"]["Method Overview"] == "The model, algorithm, and training or inference mechanism."
+    assert method_contract["recommended_subsections"]["Method Overview"] == [
+        "Mechanism Flow",
+        "Model Architecture",
+        "Training Objective",
+        "Inference and Sampling Path",
+        "Key Implementation Details",
     ]
     assert mechanism_flow_contract["required_step_count"] == "3_to_4"
 
@@ -1126,11 +1126,11 @@ def test_bundle_removes_top_n_evidence_and_uses_compact_contract() -> None:
 @pytest.mark.parametrize(
     ("paper_type", "expected_token"),
     [
-        ("AI_method", "方法机制"),
+        ("AI_method", "Method mechanism"),
         ("benchmark_or_dataset", "benchmark"),
-        ("clinical_or_psychology_empirical", "临床"),
-        ("humanities_or_social_science", "理论"),
-        ("survey_or_review", "综述"),
+        ("clinical_or_psychology_empirical", "Clinical"),
+        ("humanities_or_social_science", "theory"),
+        ("survey_or_review", "Overview"),
     ],
 )
 def test_bundle_exposes_all_paper_type_contracts_for_model_selection(

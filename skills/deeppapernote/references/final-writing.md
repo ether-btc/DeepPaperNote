@@ -23,33 +23,33 @@ Include at least:
 Do not invent placeholder metadata values. Omit unavailable fields instead.
 
 Near the beginning of the note, include:
-- `## 核心信息`
-- `## 原文摘要翻译`
-- `## 创新点`
-- `## 一句话总结`
+- `## Core Info`
+- `## Abstract Translation`
+- `## Key Innovations`
+- `## One-Sentence Summary`
 
-`## 核心信息` is a fixed metadata block, not an analysis block.
+`## Core Info` is a fixed metadata block, not an analysis block.
 Rules for this section:
 - Core info field schema: use only the following fields, in this order, and no free prose:
-  `标题`, `标题翻译`, `作者`, `机构`, `发表时间`, `发表渠道`, `DOI`, `arXiv`, `论文链接`, `代码 / 项目`, `数据 / 资源`, `论文类型`
-- keep each line in `- 字段名: 值` form
-- omit fields that are unavailable or not applicable; do not add `未知`, `无`, or placeholder rows just to fill the schema
+  `Title`, `Title Translation`, `Authors`, `Affiliations`, `Published`, `Venue`, `DOI`, `arXiv`, `Paper Link`, `Code / Project`, `Data / Resources`, `Paper Type`
+- keep each line in `- Field name: value` form
+- omit fields that are unavailable or not applicable; do not add `unknown`, `None`, or placeholder rows just to fill the schema
 - do not add ad hoc fields such as judgments, takeaways, or mini-summaries
 - do not move explanatory prose, evaluation, or "my view" sentences into this section
-- move any paper-positioning or guide sentence to `一句话总结` or an analysis section, not under `核心信息`
+- move any paper-positioning or guide sentence to `One-Sentence Summary` or an analysis section, not under `Core Info`
 
-The `原文摘要翻译` section should be a Chinese translation of the paper's original abstract:
-- if the abstract is available, translate the original abstract into Chinese before the one-sentence summary
+The `Abstract Translation` section should be a faithful English rendering of the paper's original abstract:
+- if the abstract is available, render it in English before the one-sentence summary
 - do not let the summary replace the abstract
-- do not treat `原文摘要翻译` as your own summary of the full paper; it is the original abstract translated into Chinese
-- do not split this section into `### 英文原文` and `### 中文翻译`
-- keep the section title exactly as `原文摘要翻译`
-- the `原文摘要翻译` section itself must be written in Chinese; do not output English abstract sentences or English-original paragraphs here
-- the Chinese abstract should be fluent and faithful, not a second `一句话总结`
-- do not turn `原文摘要翻译` into a selective excerpt or a compressed highlight list
-- do not add judgments, hindsight, or details learned from later sections of the paper into `原文摘要翻译`; only translate what the original abstract says
+- do not treat `Abstract Translation` as your own summary of the full paper; it is a faithful English rendering of the original abstract
+- do not split this section into original and translated subsection blocks
+- keep the section title exactly as `Abstract Translation`
+- the `Abstract Translation` section itself must be written in English
+- the rendered abstract should be fluent and faithful, not a second `One-Sentence Summary`
+- do not turn `Abstract Translation` into a selective excerpt or a compressed highlight list
+- do not add judgments, hindsight, or details learned from later sections of the paper into `Abstract Translation`; only translate what the original abstract says
 
-The `创新点` section should be a dedicated top-level section after `原文摘要翻译` rather than a hidden bullet buried later.
+The `Key Innovations` section should be a dedicated top-level section after `Abstract Translation` rather than a hidden bullet buried later.
 It should usually:
 - enumerate 3 to 5 paper-specific innovations
 - explain what problem each innovation addresses
@@ -93,7 +93,7 @@ Scripts are not enough on their own for:
 - nuanced judgment
 - identifying what is easy to misread
 - deciding what the paper's real contribution is
-- writing strong, natural Chinese analytical prose
+- writing strong, natural English analytical prose
 
 The language model should do all of the following:
 - use the grounded plan's selected paper type and section emphasis
@@ -103,7 +103,7 @@ The language model should do all of the following:
 - select the truly central results
 - reconstruct the method or analysis flow
 - decide whether the paper needs explicit LaTeX formulas for the core objective, factorization, or complexity
-- write the final note in clean Chinese
+- write the final note in clear academic English
 
 ## Final-Draft Standard
 
@@ -118,15 +118,15 @@ When the source comparison is naturally tabular, especially with three or more c
 Keep only the rows and metrics that matter for understanding the paper, and follow the table with interpretation of what the numbers mean.
 If a paper is short, do not make the final note shallow; use the saved space to explain protocol details, ablations, limitations, and deployment or replication implications.
 
-The final Chinese note must also pass a language-cleanliness check:
-- no half-English half-Chinese prose lines
+The final English note must also pass a language-cleanliness check:
+- no residual non-English prose in the note body; quoted source text may remain in its original language
 - English is allowed only for stable proper nouns or citation metadata
 - if the style gate fails, do not write the note into Obsidian yet
 - do not write for the linter; lint is only a minimum floor, not the writing objective
 - after script lint passes, `final_quality_review` and then `final_readability_review` are still required before the note should be treated as polished and ready to save
 
-正文术语策略:
-- default to natural Chinese prose in正文分析
+Text terminology strategy:
+- default to natural academic English in analytical sections
 - keep English only when it is a stable proper noun or source-faithful technical label
 - stable English that may remain:
   - model names
@@ -136,13 +136,13 @@ The final Chinese note must also pass a language-cleanliness check:
   - math symbols
   - code tokens
   - original paper figure/table ids
-- when any of the above retained English terms or standalone key numbers appear inline within Chinese prose, wrap them in backticks for visual separation
-- English that should usually be rewritten into natural Chinese:
+- use inline code only when it clarifies literal identifiers, commands, or source-faithful technical labels
+- Phrases that should be rewritten into natural English:
   - ordinary English phrases
   - abstract descriptive phrases in analytical prose
   - leftover English wording that has no clear reason to remain
-- when a first mention benefits from both forms, prefer Chinese-first wording with an English gloss in parentheses
-- do not leave phrases such as `reasoning dataset`, `distillation risk`, or `reward model quality` directly inside Chinese prose when a natural Chinese rendering is available
+- when a first mention benefits from both forms, prefer the standard English term followed by a source-language gloss only when necessary
+- avoid awkward literal translations when a natural English technical phrase is available
 
 For non-trivial papers, the note should usually not stop at only broad `##` sections.
 It should use meaningful `###` subheadings where they improve technical clarity.
@@ -150,22 +150,22 @@ It should use meaningful `###` subheadings where they improve technical clarity.
 Draft only from a note plan that has already passed grounding. Use its paper type, evidence-backed claims, boundaries, limiting results, mechanism-result links, comparisons, reusable takeaways, and follow-up questions as writing commitments rather than reopening the planning contract here.
 
 Examples:
-- `### 数据来源`
-- `### 任务定义`
-- `### 中间特征抽取`
-- `### 训练细节`
-- `### 哪些结果最重要`
-- `### 哪些地方容易被误读`
+- `### Data source`
+- `### task definition`
+- `### Intermediate feature extraction`
+- `### training details`
+- `### Which results are most important`
+- `### Where are things easily misread?`
 
 For technical papers, also strongly consider subsections such as:
-- `### 机制流程`
-- `### 训练目标`
-- `### 推理与采样链路`
-- `### 关键实现细节`
-- `### 复杂度与扩展性`
-- `### 消融到底说明了什么`
+- `### Mechanism Flow`
+- `### Training Objective`
+- `### Inference and Sampling Path`
+- `### Key Implementation Details`
+- `### Complexity and Scalability`
+- `### What Ablations Actually Show`
 
-For method, framework, and system papers, prefer an explicit `### 机制流程` subsection instead of hiding the execution chain inside generic prose.
+For method, framework, and system papers, prefer an explicit `### Mechanism Flow` subsection instead of hiding the execution chain inside generic prose.
 That subsection should usually be a 3 to 4 step numbered list covering:
 - what the Input is
 - what the main intermediate transformations are
@@ -173,7 +173,7 @@ That subsection should usually be a 3 to 4 step numbered list covering:
 - what the training or inference loop is actually doing
 - do not rely on a damaged Algorithm block to carry this explanation for you
 - do not let the steps collapse into module-name listing; each step should describe an operation
-- if a high-confidence pipeline or architecture figure matches this execution chain, place it in `### 机制流程`
+- if a high-confidence pipeline or architecture figure matches this execution chain, place it in `### Mechanism Flow`
 
 ## Formula Rule
 
@@ -203,7 +203,7 @@ Use formulas sparingly and purposefully:
 
 ## Prose Cleanliness
 
-Chinese paragraphs should read like natural prose, not like PDF fragments.
+English paragraphs should read like natural academic prose, not like PDF fragments.
 
 Do not leave:
 - mid-sentence line breaks after commas or semicolons
@@ -235,7 +235,7 @@ Before outputting the final Markdown, first run `final_quality_review` and expli
 - does the note contain concrete numbers, dimensions, complexity terms, or formulas when the paper clearly depends on them?
 - can a reader familiar with Python and deep learning frameworks follow the core method from this note alone?
 - does the method section explain the mechanism rather than only summarize the claim?
-- if this is a method/system/framework paper, does `方法主线` explicitly contain `### 机制流程` with a 3 to 4 step numbered list?
+- if this is a method/system/framework paper, does `Method Overview` explicitly contain `### Mechanism Flow` with a 3 to 4 step numbered list?
 - if the raw source reports negative or unstable ablation settings, did the note include at least one of them?
 - if the raw source does not clearly report such settings, did the note avoid inventing failed or unstable cases?
 - does the note contain at least one honest limitation and one paper-specific insight?
@@ -248,8 +248,8 @@ After `final_quality_review`, run `final_readability_review`.
 This review is a language-and-expression pass, not a second evidence-judgment pass:
 - improve fluency and readability
 - remove stiff translations
-- convert ordinary English phrase leftovers into natural Chinese
-- remove mechanical term-replacement artifacts such as `KV缓存 of`, `批量ing`, `In相关 Researcher`, or `Single 序列 generation`; figure/table callout titles and captions count too
+- rewrite awkward fragments and literal translations into natural English
+- remove mechanical term-replacement artifacts such as `KVcache of`, `batching`, `InRelated Researcher`, or `Single sequence generation`; figure/table callout titles and captions count too
 - keep stable proper nouns when forcing a translation would sound worse
 - do not invent new facts, numbers, comparisons, or failure cases during this pass
 - do not use polish as an excuse to flatten the note into a safer but shallower summary

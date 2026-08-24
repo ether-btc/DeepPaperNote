@@ -20,46 +20,46 @@ from contracts import (
 REQUIRED_SECTIONS = NOTE_REQUIRED_SECTIONS
 
 CORE_INFO_FIELDS = [
-    "标题",
-    "标题翻译",
-    "作者",
-    "机构",
-    "发表时间",
-    "发表渠道",
+    "Title",
+    "Title Translation",
+    "Authors",
+    "Affiliations",
+    "Published",
+    "Venue",
     "DOI",
     "arXiv",
-    "论文链接",
-    "代码 / 项目",
-    "数据 / 资源",
-    "论文类型",
+    "Paper Link",
+    "Code / Project",
+    "Data / Resources",
+    "Paper Type",
 ]
 
 CORE_INFO_FIELD_INDEX = {field: idx for idx, field in enumerate(CORE_INFO_FIELDS)}
 
 FIGURE_TARGET_SECTIONS = {
-    "研究问题",
-    "数据与任务定义",
-    "方法主线",
-    "关键结果",
-    "深度分析",
-    "局限",
-    "我的笔记",
+    "Research Question",
+    "Data and Task Definition",
+    "Method Overview",
+    "Key Results",
+    "Deep Analysis",
+    "Limitations",
+    "My Notes",
 }
 
 FIGURE_BUCKET_RESIDUE_TOKENS = {
-    "剩余",
-    "残余",
-    "未放置",
-    "未处理",
-    "待补",
+    "Remaining",
+    "remnants",
+    "Not placed",
+    "Not processed",
+    "To be replenished",
 }
 
 FIGURE_BUCKET_VISUAL_TOKENS = {
-    "图",
-    "表",
-    "图片",
-    "图表",
-    "占位",
+    "Figure",
+    "table",
+    "pictures",
+    "chart",
+    "Placeholder",
 }
 
 ENGLISH_FIGURE_BUCKET_RESIDUE_TOKENS = {
@@ -79,15 +79,17 @@ ENGLISH_FIGURE_BUCKET_VISUAL_TOKENS = {
     "tables",
     "placeholder",
     "placeholders",
+    "chart",
+    "charts",
 }
 
 NONSTANDARD_FIGURE_PLACEHOLDER_RE = re.compile(
     r"""(?ix)
     ^\s*
     (?:
-        \[\s*(?:图表|图片|图|表)\s*占位\s*\|[^\]]+\]
+        \[\s*(?:chart|pictures|Figure|table)\s*Placeholder\s*\|[^\]]+\]
         |
-        (?:图表|图片|图|表)\s*占位\s*[:：]\s*\S+
+        (?:chart|pictures|Figure|table)\s*Placeholder\s*:\s*\S+
         |
         \[\s*(?:figure|fig|table)\s+placeholder\s*(?:\||:|\]|-|\s+(?:fig(?:ure)?|table)\.?\s*\d)
         |
@@ -99,9 +101,9 @@ NONSTANDARD_FIGURE_PLACEHOLDER_RE = re.compile(
 REAL_IMAGE_STATUS_RE = re.compile(
     r"""
     (?:
-        已\s*(?:替换|插入|复制|拷贝|物化|写入)
+        Already\s*(?:replace|Insert|Copy|copy|materialize|write)
         |
-        (?:替换|插入)\s*为\s*真实图片
+        (?:replace|Insert)\s*for\s*real pictures
         |
         \b(?:inserted|replaced|copied|materialized)\b
     )
@@ -112,19 +114,19 @@ REAL_IMAGE_STATUS_RE = re.compile(
 USABLE_CANDIDATE_STATUS_RE = re.compile(
     r"""
     (?:
-        候选[^。；，\n>]{0,24}(?<!不)(?:可用|可读|清晰)
+        candidate[^.;,\n>]{0,24}(?<!No)(?:Available|readable|clear)
         |
-        (?<!不)可用[^。；，\n>]{0,12}候选
+        (?<!No)Available[^.;,\n>]{0,12}candidate
         |
-        (?:图像|图片|表格|图|表)?\s*裁剪[^。；，\n>]{0,12}(?<!不)(?:可用|可读|清晰)
+        (?:image|pictures|table|Figure|table)?\s*Crop[^.;,\n>]{0,12}(?<!No)(?:Available|readable|clear)
         |
-        (?:图像|图片|表格|图|表)[^。；，\n>]{0,12}(?<!不)(?:可用|可读|清晰)
+        (?:image|pictures|table|Figure|table)[^.;,\n>]{0,12}(?<!No)(?:Available|readable|clear)
         |
-        图号\s*匹配
+        Drawing number\s*match
         |
-        匹配度\s*高
+        Matching degree\s*high
         |
-        高\s*置信(?:度)?[^。；，\n>]{0,12}候选
+        high\s*Confidence(?:degree)?[^.;,\n>]{0,12}candidate
         |
         usable\s+candidate
         |
@@ -133,6 +135,8 @@ USABLE_CANDIDATE_STATUS_RE = re.compile(
         clear\s+crop
         |
         high[-\s]*(?:confidence|match)
+        |
+        (?:cropp\w*[^\n>]{0,24}readab|image\s+match|candidate\s+images?\s+available|clearly\s+cropped)
     )
     """,
     flags=re.IGNORECASE | re.VERBOSE,
@@ -141,13 +145,13 @@ USABLE_CANDIDATE_STATUS_RE = re.compile(
 USABLE_CANDIDATE_VISUAL_DEFECT_RE = re.compile(
     r"""
     (?:
-        混入|污染|相邻|裁切|截断|切断|缺失|缺少|表体不完整|表格主体缺失|正文污染
+        mix in|pollution|adjacent|Cut|Truncate|cut off|Missing|missing|Incomplete body|Table body missing|Text pollution
         |
-        只拿到|局部(?:子图|面板|截图|区域)|部分(?:子图|裁剪)
+        only got|local(?:subplot|panel|screenshot|area)|part(?:subplot|Crop)
         |
-        无法稳定|不可独立解释|质量门|reject_visual_quality
+        Unable to stabilize|cannot be independently explained|quality gate|reject_visual_quality
         |
-        partial|subpanel|contaminat|truncat|incomplete|missing
+        partial|subpanel|contaminat|truncat|incomplete|missing|not\s+found|no\s+(?:high[-\s]*confidence\s+)?whole\s+image
         |
         caption\s*(?:missing|cut|truncated)
     )
@@ -158,13 +162,13 @@ USABLE_CANDIDATE_VISUAL_DEFECT_RE = re.compile(
 USABLE_CANDIDATE_MATERIALIZATION_BLOCKED_RE = re.compile(
     r"""
     (?:
-        (?:materialize_figure_asset\.py|物化|复制|拷贝|写入|权限|permission|工具|copy)
-        [^。；\n]{0,40}
-        (?:失败|不足|拒绝|denied|blocked|error|报错)
+        (?:materialize_figure_asset\.py|materialize|Copy|copy|write|Permissions|permission|Tools|copy)
+        [^.;\n]{0,40}
+        (?:failed|Insufficient|reject|denied|blocked|error|Report an error)
         |
-        (?:失败|不足|拒绝|denied|blocked|error|报错)
-        [^。；\n]{0,40}
-        (?:materialize|物化|复制|拷贝|写入|权限|permission|copy)
+        (?:failed|Insufficient|reject|denied|blocked|error|Report an error)
+        [^.;\n]{0,40}
+        (?:materialize|materialize|Copy|copy|write|Permissions|permission|copy)
     )
     """,
     flags=re.IGNORECASE | re.VERBOSE,
@@ -173,13 +177,13 @@ USABLE_CANDIDATE_MATERIALIZATION_BLOCKED_RE = re.compile(
 MISSING_ASSET_MATERIALIZATION_RE = re.compile(
     r"""
     (?:
-        (?:资产缺失|未找到|没有|缺少|asset_candidate_missing|candidate\s+missing)
-        [^。；\n]{0,50}
-        (?:materialize_figure_asset\.py|物化|复制|拷贝|写入|权限|permission|copy|blocked)
+        (?:Missing assets|not found|No|missing|asset_candidate_missing|candidate\s+missing)
+        [^.;\n]{0,50}
+        (?:materialize_figure_asset\.py|materialize|Copy|copy|write|Permissions|permission|copy|blocked)
         |
-        (?:materialize_figure_asset\.py|物化|复制|拷贝|写入|权限|permission|copy|blocked)
-        [^。；\n]{0,50}
-        (?:资产缺失|未找到|没有|缺少|asset_candidate_missing|candidate\s+missing)
+        (?:materialize_figure_asset\.py|materialize|Copy|copy|write|Permissions|permission|copy|blocked)
+        [^.;\n]{0,50}
+        (?:Missing assets|not found|No|missing|asset_candidate_missing|candidate\s+missing)
     )
     """,
     flags=re.IGNORECASE | re.VERBOSE,
@@ -207,9 +211,9 @@ MECHANICAL_TRANSLATION_ARTIFACT_RE = re.compile(
     (?:
         [\u4e00-\u9fff]+(?:ing|ed|s)\b
         |
-        \b[A-Za-z]{2,}相关\b
+        \b[A-Za-z]{2,}Related\b
         |
-        [\u4e00-\u9fff](?:缓存|块)?\s+(?:of|with|for|on|in|from|and)\b
+        [\u4e00-\u9fff](?:cache|block)?\s+(?:of|with|for|on|in|from|and)\b
         |
         \b(?:of|with|for|on|in|from|and)\s+[\u4e00-\u9fff]
         |
@@ -217,7 +221,7 @@ MECHANICAL_TRANSLATION_ARTIFACT_RE = re.compile(
         |
         \b(?:block|caption|slot|query|input|layout|serving|memory|management|overhead|latency|dependent|preemption)\s+[\u4e00-\u9fff]
         |
-        \b(?:Single|Shared|Performance|Storing|Illustration)\b[^\n。；]{0,60}[\u4e00-\u9fff]
+        \b(?:Single|Shared|Performance|Storing|Illustration)\b[^\n.;]{0,60}[\u4e00-\u9fff]
     )
     """,
     flags=re.IGNORECASE | re.VERBOSE,
@@ -322,7 +326,7 @@ def find_missing_sections(text: str) -> list[str]:
 
 def front_matter_order_warnings(text: str) -> list[str]:
     warnings: list[str] = []
-    required_order = ["## 原文摘要翻译", "## 创新点", "## 一句话总结"]
+    required_order = ["## Abstract Translation", "## Key Innovations", "## One-Sentence Summary"]
     positions = []
     for section in required_order:
         idx = text.find(section)
@@ -364,13 +368,22 @@ def inspect_reference_hygiene(text: str) -> list[dict[str, object]]:
 
 
 METHOD_PAPER_SIGNAL_KEYWORDS = [
-    "模型",
-    "框架",
-    "系统",
-    "模块",
-    "编码器",
-    "解码器",
-    "预融合",
+    "method",
+    "architecture",
+    "training",
+    "inference",
+    "fine-tune",
+    "finetune",
+    "backbone",
+    "benchmark",
+    "implementation",
+    "model",
+    "framework",
+    "system",
+    "module",
+    "encoder",
+    "decoder",
+    "pre-fusion",
     "attention",
     "encoder",
     "decoder",
@@ -379,26 +392,28 @@ METHOD_PAPER_SIGNAL_KEYWORDS = [
 ]
 
 MECHANISM_IO_TOKENS = [
-    "输入",
-    "输出",
-    "送入",
-    "送到",
-    "生成",
-    "得到",
+    "input",
+    "output",
+    "token",
+    "embedding",
 ]
 
 MECHANISM_ACTION_TOKENS = [
-    "融合",
-    "投影",
-    "压缩",
-    "对齐",
-    "池化",
-    "提取",
-    "编码",
-    "解码",
-    "拼接",
-    "查询",
-    "更新",
+    "retrieves",
+    "computes",
+    "produces",
+    "maps",
+    "aggregates",
+    "passes",
+    "fuses",
+    "projects",
+    "compresses",
+    "aligns",
+    "pools",
+    "extracts",
+    "encodes",
+    "decodes",
+    "concatenates",
 ]
 
 
@@ -437,40 +452,40 @@ ENGLISH_FUNCTION_WORDS = {
 }
 
 PLACEHOLDER_ONLY_PATTERNS = [
-    r"^待补充[。.!！]*$",
-    r"^todo[。.!！]*$",
-    r"^暂无[。.!！]*$",
-    r"^略[。.!！]*$",
-    r"^参见原论文[。.!！]*$",
-    r"^这里记录.*[。.!！]*$",
-    r"^本节记录.*[。.!！]*$",
+    r"^to be added[.!]*$",
+    r"^todo[.!]*$",
+    r"^none yet[.!]*$",
+    r"^see (?:the )?original paper[.!]*$",
+    r"^record(?:s)? (?:it )?here.*[.!]*$",
+    r"^records? in this section.*[.!]*$",
 ]
 
 GENERIC_INNOVATION_PATTERNS = [
-    r"本文提出(?:了)?一种新方法",
-    r"具有创新性",
-    r"novel approach",
-    r"首次实现",
+    r"\bthis (?:paper|article|work) proposes a new (?:method|approach)\b",
+    r"\b(?:a )?novel approach\b",
+    r"\binnovative (?:method|approach|framework)\b",
+    r"\bimplemented for the first time\b",
+    r"specific innovations? of the paper (?:are )?recorded here",
 ]
 
 GENERIC_KEY_RESULT_PATTERNS = [
-    r"实验结果表明方法有效",
-    r"结果表明.*有效",
-    r"取得(?:了)?较好效果",
-    r"性能.*优越",
+    r"\b(?:experimental )?results show.{0,40}\b(?:effective|better)\b",
+    r"\bsignificantly improves?\b",
+    r"\b(?:achieves?|obtains?) better (?:results?|performance)\b",
+    r"\bperformance (?:is )?(?:superior|better)\b",
 ]
 
 GENERIC_LIMITATION_PATTERNS = [
-    r"未来工作.*更多数据",
-    r"需要更多数据",
-    r"future work can",
-    r"more data",
-    r"后续.*扩展",
+    r"\bfuture work.{0,40}(?:needs?|requires?|could use) more data\b",
+    r"\b(?:we )?need more data\b",
+    r"\bfuture work (?:can|could|should)\b",
+    r"\bmore data (?:is|are) needed\b",
+    r"\bfollow-up work.{0,30}(?:expand|extend)\b",
 ]
 
-HONEST_MISSING_TOKENS = ("本文未给出", "论文未给出", "未报告", "没有报告", "未提供")
-HONEST_MISSING_BASIS_TOKENS = ("依据", "正文", "附录", "表格", "coverage", "作者")
-HONEST_MISSING_IMPACT_TOKENS = ("影响", "限制", "受限", "不能", "无法", "结论强度")
+HONEST_MISSING_TOKENS = ("not provide", "not given", "not reported", "no report", "not provided")
+HONEST_MISSING_BASIS_TOKENS = ("basis", "main text", "appendix", "table", "coverage", "authors")
+HONEST_MISSING_IMPACT_TOKENS = ("impact", "limit", "restricted", "cannot", "unable", "conclusion strength", "integrity limited")
 
 DOUBLE_ESCAPED_TEX_COMMANDS = {
     "alpha",
@@ -512,9 +527,9 @@ def is_exempt_line(line: str) -> bool:
         return True
     if (
         stripped.startswith("> [!figure]")
-        or stripped.startswith("> 建议位置：")
-        or stripped.startswith("> 放置原因：")
-        or stripped.startswith("> 当前状态：")
+        or stripped.startswith("> Suggested Placement:")
+        or stripped.startswith("> Rationale:")
+        or stripped.startswith("> Current Status:")
     ):
         return True
     if re.search(r"https?://", stripped):
@@ -550,28 +565,41 @@ def subsection_name_for_line(lines: list[str], line_index: int) -> str:
 def mixed_language_issues(text: str) -> list[dict[str, object]]:
     issues: list[dict[str, object]] = []
     lines = text.splitlines()
+    in_frontmatter = bool(lines and lines[0].strip() == "---")
+    fence_char = ""
+    fence_length = 0
     for idx, line in enumerate(lines, start=1):
-        if is_exempt_line(line):
-            continue
         stripped = line.strip()
+        if in_frontmatter:
+            if idx > 1 and stripped == "---":
+                in_frontmatter = False
+            continue
+        fence_match = re.match(r"^\s*(?:[-*+]\s+)?(`{3,}|~{3,})(?:[^`~]*)$", line)
+        if fence_match:
+            delimiter = fence_match.group(1)
+            if not fence_char:
+                fence_char = delimiter[0]
+                fence_length = len(delimiter)
+                continue
+            if delimiter[0] == fence_char and len(delimiter) >= fence_length:
+                fence_char = ""
+                fence_length = 0
+                continue
+        if fence_char or stripped.startswith(">"):
+            continue
         section_name = section_name_for_line(lines, idx - 1)
-        subsection_name = subsection_name_for_line(lines, idx - 1)
-        if section_name in {"核心信息", "引用"}:
+        if section_name == "References":
             continue
-        if not re.search(r"[\u4e00-\u9fff]", stripped):
-            continue
-        english_words = re.findall(r"\b[A-Za-z][A-Za-z0-9.-]*\b", stripped)
-        if len(english_words) < 4:
-            continue
-        function_hits = [word for word in english_words if word.lower() in ENGLISH_FUNCTION_WORDS]
-        if not function_hits and len(english_words) < 7:
+        check_text = re.sub(r"`[^`]*`", "", stripped)
+        check_text = re.sub(r"!?\[[^\]]*\]\([^)]*\)", "", check_text)
+        check_text = HTTP_URL_RE.sub("", check_text)
+        if not re.search(r"[\u4e00-\u9fff]", check_text):
             continue
         issues.append(
             {
                 "line_number": idx,
                 "line": stripped,
-                "english_word_count": len(english_words),
-                "function_word_hits": function_hits[:6],
+                "reason": "residual_cjk",
             }
         )
     return issues
@@ -620,11 +648,11 @@ def inspect_figure_callouts(text: str) -> list[str]:
             nxt = lines[j].strip()
             if not nxt.startswith(">"):
                 break
-            if nxt.startswith("> 建议位置："):
+            if nxt.startswith("> Suggested Placement:"):
                 has_location = True
-            if nxt.startswith("> 放置原因："):
+            if nxt.startswith("> Rationale:"):
                 has_reason = True
-            if nxt.startswith("> 当前状态："):
+            if nxt.startswith("> Current Status:"):
                 has_status = True
             j += 1
         if not has_location:
@@ -648,9 +676,9 @@ def figure_callout_title(line: str) -> str:
 
 def figure_status_text(line: str) -> str:
     stripped = line.strip()
-    if not stripped.startswith("> 当前状态："):
+    if not stripped.startswith("> Current Status:"):
         return ""
-    return stripped.removeprefix("> 当前状态：").strip()
+    return stripped.removeprefix("> Current Status:").strip()
 
 
 def has_accepted_usable_placeholder_reason(status_text: str) -> bool:
@@ -748,8 +776,8 @@ def figure_callout_placement_issues(text: str) -> list[dict[str, object]]:
             nxt = lines[j].strip()
             if not nxt.startswith(">"):
                 break
-            if nxt.startswith("> 建议位置："):
-                location = nxt.removeprefix("> 建议位置：").strip()
+            if nxt.startswith("> Suggested Placement:"):
+                location = nxt.removeprefix("> Suggested Placement:").strip()
                 break
             j += 1
 
@@ -919,21 +947,21 @@ def figure_structure_passes(text: str) -> bool:
 
 
 def core_info_structure_issues(text: str) -> list[dict[str, object]]:
-    body = section_body(text, "核心信息")
+    body = section_body(text, "Core Info")
     if not body:
         return []
 
     issues: list[dict[str, object]] = []
     seen_fields: set[str] = set()
     last_known_index = -1
-    base_line = _line_number_from_offset(text, text.find("## 核心信息"))
+    base_line = _line_number_from_offset(text, text.find("## Core Info"))
 
     for offset, raw_line in enumerate(body.splitlines(), start=1):
         stripped = raw_line.strip()
         if not stripped:
             continue
         line_number = base_line + offset
-        match = re.match(r"^-\s*([^:：]+)\s*[:：]\s*(.*)$", stripped)
+        match = re.match(r"^-\s*([^:]+)\s*:\s*(.*)$", stripped)
         if not match:
             issues.append(
                 {
@@ -987,7 +1015,7 @@ def is_prose_line(line: str) -> bool:
     stripped = line.strip()
     if not stripped:
         return False
-    if stripped.startswith(("#", "-", "*", "> ", "```", "![[", "*论文原图编号")):
+    if stripped.startswith(("#", "-", "*", "> ", "```", "![[", "*Original figure number")):
         return False
     if stripped.startswith("`") and stripped.endswith("`"):
         return False
@@ -1004,12 +1032,12 @@ def suspicious_mid_sentence_linebreaks(text: str) -> list[dict[str, object]]:
             continue
         if is_metadata_line(current) or is_metadata_line(nxt):
             continue
-        if re.search(r"[。！？.!?：:]$", current):
+        if re.search(r"[.!?:]$", current):
             continue
-        if not re.search(r"[，,；;、）)\]」』]$", current):
+        if not re.search(r"[,;)\]]$", current):
             if not re.search(r"[A-Za-z0-9`\u4e00-\u9fff]$", current):
                 continue
-        if not re.match(r"^[A-Za-z0-9`\u4e00-\u9fff(（“‘\"]", nxt):
+        if not re.match(r"^[A-Za-z0-9`\u4e00-\u9fff(\"']", nxt):
             continue
         issues.append(
             {
@@ -1304,14 +1332,14 @@ def cleaned_section_lines(body: str) -> list[str]:
             continue
         if (
             stripped.startswith("> [!figure]")
-            or stripped.startswith("> 建议位置：")
-            or stripped.startswith("> 放置原因：")
-            or stripped.startswith("> 当前状态：")
+            or stripped.startswith("> Suggested Placement:")
+            or stripped.startswith("> Rationale:")
+            or stripped.startswith("> Current Status:")
         ):
             continue
         if stripped.startswith("!["):
             continue
-        if stripped.startswith("*论文原图编号：") and stripped.endswith("*"):
+        if stripped.startswith("*Original figure number:") and stripped.endswith("*"):
             continue
         if stripped.startswith("> "):
             stripped = stripped[2:].strip()
@@ -1351,14 +1379,14 @@ def issue(section: str, reason: str, severity: str, snippet: str) -> dict[str, o
 def text_units(body: str) -> list[str]:
     units: list[str] = []
     for line in cleaned_section_lines(body):
-        stripped = re.sub(r"^(?:[-*+]|\d+[.)、])\s*", "", line).strip()
+        stripped = re.sub(r"^(?:[-*+]|\d+[.)])\s*", "", line).strip()
         if stripped:
             units.append(stripped)
     if units:
         return units
     return [
         part.strip()
-        for part in re.split(r"[。！？!?]\s*", normalized_section_content(body))
+        for part in re.split(r"[.!?]\s*", normalized_section_content(body))
         if part.strip()
     ]
 
@@ -1371,7 +1399,7 @@ def meaningful_units(body: str, generic_patterns: list[str] | None = None) -> li
             continue
         if generic_patterns and matches_any_pattern(unit, generic_patterns):
             continue
-        compact = re.sub(r"[\s，。,.；;：:、\-*+()（）【】\[\]]+", "", unit)
+        compact = re.sub(r"[\s,.;:\-*+()\[\]]+", "", unit)
         if len(compact) < 12:
             continue
         kept.append(unit)
@@ -1383,7 +1411,7 @@ def has_number_token(text: str) -> bool:
 
 
 def is_honest_missing_declaration(text: str) -> bool:
-    normalized = normalize_lint_whitespace(text)
+    normalized = normalize_lint_whitespace(text).lower()
     if not any(token in normalized for token in HONEST_MISSING_TOKENS):
         return False
     if not any(token in normalized for token in HONEST_MISSING_BASIS_TOKENS):
@@ -1397,7 +1425,7 @@ def has_reference_entry(text: str) -> bool:
     normalized = normalize_lint_whitespace(text)
     if re.search(r"10\.\d{4,9}/\S+", normalized):
         return True
-    if re.search(r"\barXiv[:：]?\s*\d{4}\.\d{4,5}", normalized, flags=re.IGNORECASE):
+    if re.search(r"\barXiv:?\s*\d{4}\.\d{4,5}", normalized, flags=re.IGNORECASE):
         return True
     if re.search(r"\[\[[^\]]+\]\]", normalized):
         return True
@@ -1405,7 +1433,7 @@ def has_reference_entry(text: str) -> bool:
         return True
     if re.search(r"\b[A-Z][A-Za-z-]+ et al\.?\s*,?\s*(?:19|20)\d{2}\b", normalized):
         return True
-    if re.search(r"(?:19|20)\d{2}.*(?:DOI|doi|会议|期刊|arXiv)", normalized):
+    if re.search(r"(?:19|20)\d{2}.*(?:DOI|conference|journal|arXiv)", normalized, flags=re.IGNORECASE):
         return True
     return False
 
@@ -1417,53 +1445,53 @@ def inspect_substantive_content(text: str) -> list[dict[str, object]]:
         content = normalized_section_content(body)
         if is_placeholder_like(content):
             issues.append(issue(section, "section_empty_shell", "error", content or section))
-        if section not in {"关键结果", "引用"} and is_honest_missing_declaration(content):
+        if section not in {"Key Results", "References"} and is_honest_missing_declaration(content):
             issues.append(issue(section, "section_honest_missing_not_allowed", "error", content))
 
-    innovation = section_body(text, "创新点")
+    innovation = section_body(text, "Key Innovations")
     innovation_content = normalized_section_content(innovation)
     innovation_units = meaningful_units(innovation, GENERIC_INNOVATION_PATTERNS)
     if not innovation_units:
-        issues.append(issue("创新点", "innovation_empty_shell", "error", innovation_content))
+        issues.append(issue("Key Innovations", "innovation_empty_shell", "error", innovation_content))
     elif len(innovation_units) < 2:
-        issues.append(issue("创新点", "innovation_too_few_specific_points", "warning", innovation_content))
+        issues.append(issue("Key Innovations", "innovation_too_few_specific_points", "warning", innovation_content))
 
-    key_results = section_body(text, "关键结果")
+    key_results = section_body(text, "Key Results")
     key_results_content = normalized_section_content(key_results)
     if is_honest_missing_declaration(key_results_content):
         issues.append(
             issue(
-                "关键结果",
+                "Key Results",
                 "key_results_honest_missing_not_allowed",
                 "error",
                 key_results_content,
             )
         )
     elif not meaningful_units(key_results, GENERIC_KEY_RESULT_PATTERNS):
-        issues.append(issue("关键结果", "key_results_empty_shell", "error", key_results_content))
+        issues.append(issue("Key Results", "key_results_empty_shell", "error", key_results_content))
     elif not has_number_token(key_results_content):
         issues.append(
             issue(
-                "关键结果",
+                "Key Results",
                 "key_results_quantitative_result_missing",
                 "warning",
                 key_results_content,
             )
         )
 
-    references = section_body(text, "引用")
+    references = section_body(text, "References")
     references_content = normalized_section_content(references)
     if is_honest_missing_declaration(references_content):
-        issues.append(issue("引用", "references_unavailable_declared", "warning", references_content))
+        issues.append(issue("References", "references_unavailable_declared", "warning", references_content))
     elif is_placeholder_like(references_content) or not has_reference_entry(references_content):
-        issues.append(issue("引用", "references_placeholder", "error", references_content))
+        issues.append(issue("References", "references_placeholder", "error", references_content))
 
-    limitations = section_body(text, "局限")
+    limitations = section_body(text, "Limitations")
     limitations_content = normalized_section_content(limitations)
     if not meaningful_units(limitations, GENERIC_LIMITATION_PATTERNS):
-        issues.append(issue("局限", "limitations_empty_shell", "error", limitations_content))
+        issues.append(issue("Limitations", "limitations_empty_shell", "error", limitations_content))
 
-    for section in ("方法主线", "深度分析"):
+    for section in ("Method Overview", "Deep Analysis"):
         body = section_body(text, section)
         content = normalized_section_content(body)
         if not meaningful_units(body):
@@ -1481,7 +1509,7 @@ def inspect_substantive_content(text: str) -> list[dict[str, object]]:
 
 
 def method_section_requires_mechanism_flow(text: str) -> bool:
-    body = section_body(text, "方法主线")
+    body = section_body(text, "Method Overview")
     if not body:
         return False
     lower = body.lower()
@@ -1494,11 +1522,11 @@ def mechanism_flow_warnings(text: str) -> list[str]:
     warnings: list[str] = []
     if not method_section_requires_mechanism_flow(text):
         return warnings
-    if "### 机制流程" not in text:
+    if "### Mechanism Flow" not in text:
         warnings.append("mechanism_flow_subsection_missing")
         return warnings
 
-    body = subsection_body(text, "方法主线", "机制流程")
+    body = subsection_body(text, "Method Overview", "Mechanism Flow")
     if not body:
         warnings.append("mechanism_flow_subsection_empty")
         return warnings
@@ -1507,7 +1535,7 @@ def mechanism_flow_warnings(text: str) -> list[str]:
     if not 3 <= len(step_lines) <= 4:
         warnings.append("mechanism_flow_step_count_unexpected")
 
-    step_text = " ".join(step_lines)
+    step_text = " ".join(step_lines).lower()
     has_io_signal = any(token in step_text for token in MECHANISM_IO_TOKENS)
     has_action_signal = any(token in step_text for token in MECHANISM_ACTION_TOKENS)
     if not (has_io_signal and has_action_signal):

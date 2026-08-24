@@ -51,7 +51,7 @@ CAPTION_RE = re.compile(
     r"|scheme\.?\s*\d+[a-z]?"
     r"|algorithm\.?\s*\d+[a-z]?"
     r"|(?:fig(?:ure)?|table)\.?\s*[AS]?\d+[a-z]?"
-    r"))(?!\.\d)(?=$|[\s:：.。,\、|—–-])",
+    r"))(?!\.\d)(?=$|[\s:.,|—–-])",
     re.IGNORECASE,
 )
 

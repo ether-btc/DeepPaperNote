@@ -42,8 +42,8 @@ def test_write_note_falls_back_to_workspace(tmp_path: Path) -> None:
     note_path = Path(payload["note_path"])
     images_dir = Path(payload["images_dir"])
     assert payload["output_mode"] == "workspace"
-    assert payload["subdir"] == "机器学习"
-    assert note_path == tmp_path / "DeepPaperNote_output" / "机器学习" / "Fallback_Output_Test" / "Fallback_Output_Test.md"
+    assert payload["subdir"] == "machine learning"
+    assert note_path == tmp_path / "DeepPaperNote_output" / "machine learning" / "Fallback_Output_Test" / "Fallback_Output_Test.md"
     assert note_path.exists()
     assert images_dir == note_path.parent / "images"
     assert images_dir.exists() and images_dir.is_dir()
@@ -187,7 +187,7 @@ def test_write_note_in_vault_mode_does_not_duplicate_paper_slug(tmp_path: Path) 
             "--title",
             "My Test Paper",
             "--subdir",
-            "心理健康/My_Test_Paper",
+            "mental health/My_Test_Paper",
             "--content",
             "# My Test Paper\n\nVault write regression test.\n",
         ],
@@ -199,7 +199,7 @@ def test_write_note_in_vault_mode_does_not_duplicate_paper_slug(tmp_path: Path) 
     )
     payload = json.loads(result.stdout)
     note_path = Path(payload["note_path"])
-    assert note_path == vault / "Research/Papers" / "心理健康" / "My_Test_Paper" / "My_Test_Paper.md"
+    assert note_path == vault / "Research/Papers" / "mental health" / "My_Test_Paper" / "My_Test_Paper.md"
     assert note_path.exists()
 
 
@@ -329,7 +329,7 @@ def test_write_note_refuses_runtime_artifact_reference_without_lint_json(tmp_pat
             "--title",
             "Direct Reference Hygiene Test",
             "--content",
-            "# Direct Reference Hygiene Test\n\n## 引用\n\n- /private/tmp/dpn-test-runs/candidate/artifacts/llama_source_manifest.json\n",
+            "# Direct Reference Hygiene Test\n\n## References\n\n- /private/tmp/dpn-test-runs/candidate/artifacts/llama_source_manifest.json\n",
         ],
         cwd=tmp_path,
         env=env,

@@ -60,7 +60,7 @@ def test_shell_config_value_strips_bom(tmp_path: Path, monkeypatch) -> None:
 def test_load_domain_rules_strips_bom(tmp_path: Path, monkeypatch) -> None:
     rules_yaml = (
         "domains:\n"
-        "  - label: 测试专用域ZZZ\n"
+        "  - label: Test private domainZZZ\n"
         "    aliases:\n"
         "      - zzztestalias\n"
         "    keywords:\n"
@@ -74,7 +74,7 @@ def test_load_domain_rules_strips_bom(tmp_path: Path, monkeypatch) -> None:
     # If the BOM were not stripped, the top-level `domains:` key would be
     # "﻿domains", the section would be skipped, and load_domain_rules would
     # silently fall back to the built-in defaults (which lack this label).
-    assert "测试专用域ZZZ" in labels
+    assert "Test private domainZZZ" in labels
 
 
 def test_citation_index_includes_bom_prefixed_note(tmp_path: Path) -> None:
@@ -119,18 +119,18 @@ def test_resolve_obsidian_note_path_no_double_papers_prefix(tmp_path: Path) -> N
     path = resolve_obsidian_note_path(
         config,
         title="Some Paper",
-        subdir="Research/Papers/大模型/Some_Paper",
+        subdir="Research/Papers/large model/Some_Paper",
     )
     # The papers_dir prefix must appear exactly once (the pre-fix code compared
     # str(Path(subdir)) — backslashes on Windows — and duplicated the prefix).
     assert path.relative_to(vault).parts.count("Research") == 1
-    assert path == vault / "Research/Papers" / "大模型" / "Some_Paper" / "Some_Paper.md"
+    assert path == vault / "Research/Papers" / "large model" / "Some_Paper" / "Some_Paper.md"
 
 
 def test_source_image_filename_handles_backslash_path() -> None:
     plan_item = {
         "figure_asset_candidate": {
-            "path": r"C:\vault\Research\Papers\大模型\Paper\images\page_004_fig.png",
+            "path": r"C:\vault\Research\Papers\large model\Paper\images\page_004_fig.png",
             "filename": "",
         }
     }
@@ -151,7 +151,7 @@ def _clean_env() -> dict[str, str]:
 
 def test_lint_note_detects_title_in_bom_crlf_note(tmp_path: Path) -> None:
     note = tmp_path / "note.md"
-    content = "---\ntags:\n  - papers/x\n---\n# 标题\n\n正文\n".replace("\n", "\r\n")
+    content = "---\ntags:\n  - papers/x\n---\n# Title\n\nText\n".replace("\n", "\r\n")
     note.write_bytes(BOM.encode("utf-8") + content.encode("utf-8"))
     result = subprocess.run(
         [sys.executable, str(SCRIPTS / "lint_note.py"), "--input", str(note)],
@@ -171,7 +171,7 @@ def test_write_obsidian_note_strips_bom_from_saved_note(tmp_path: Path) -> None:
     vault.mkdir()
     content_file = tmp_path / "note.md"
     content_file.write_bytes(
-        BOM.encode("utf-8") + "# 标题\n\n正文内容。\n".encode("utf-8")
+        BOM.encode("utf-8") + "# Title\n\nText content。\n".encode("utf-8")
     )
     result = subprocess.run(
         [
@@ -192,7 +192,7 @@ def test_write_obsidian_note_strips_bom_from_saved_note(tmp_path: Path) -> None:
     # The BOM must not survive into the saved note (it breaks Obsidian
     # frontmatter / the H1 title).
     assert not saved.startswith(BOM)
-    assert saved.lstrip().startswith("# 标题")
+    assert saved.lstrip().startswith("# Title")
 
 
 def test_materialize_figure_asset_embed_uses_forward_slashes(tmp_path: Path) -> None:

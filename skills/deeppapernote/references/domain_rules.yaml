@@ -1,13 +1,13 @@
 # User-editable domain routing taxonomy.
 # Application domains are tried before fallback method domains.
 domains:
-  - label: 医疗健康
+  - label: medical health
     aliases:
       - healthcare
       - medical
       - clinical medicine
     specialized_folders:
-      - 心理健康
+      - mental health
     keywords:
       - clinical
       - patient
@@ -27,7 +27,7 @@ domains:
       - medical
     methods: []
 
-  - label: 法律
+  - label: law
     aliases:
       - legal
       - law
@@ -43,7 +43,7 @@ domains:
       - case law
     methods: []
 
-  - label: 教育
+  - label: education
     aliases:
       - education
       - educational
@@ -58,7 +58,7 @@ domains:
       - pedagogy
     methods: []
 
-  - label: 金融
+  - label: Finance
     aliases:
       - finance
       - financial
@@ -75,7 +75,7 @@ domains:
       - investment
     methods: []
 
-  - label: 机器人
+  - label: robot
     aliases:
       - robotics
       - robotic
@@ -92,7 +92,7 @@ domains:
     methods:
       - diffusion policy
 
-  - label: 软件工程
+  - label: software engineering
     aliases:
       - software engineering
     keywords:
@@ -107,7 +107,7 @@ domains:
       - compiler
     methods: []
 
-  - label: 生物医学
+  - label: biomedicine
     aliases:
       - biomedical
       - bioinformatics
@@ -122,8 +122,8 @@ domains:
       - bioinformatics
     methods: []
 
-  - label: 心理健康
-    route_to: 医疗健康
+  - label: mental health
+    route_to: medical health
     aliases:
       - mental health
       - psychology
@@ -139,7 +139,7 @@ domains:
       - symptom
     methods: []
 
-  - label: 推荐系统
+  - label: Recommendation system
     aliases:
       - recommender systems
       - recommendation
@@ -152,7 +152,7 @@ domains:
     methods: []
 
 fallback_domains:
-  - label: 大模型
+  - label: large model
     aliases:
       - llm
       - large language model
@@ -185,7 +185,7 @@ fallback_domains:
       - rlhf
     methods: []
 
-  - label: 机器学习
+  - label: machine learning
     aliases:
       - machine learning
       - ml

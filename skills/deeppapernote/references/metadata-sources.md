@@ -38,7 +38,7 @@ Use the strongest available source first, but backfill aggressively.
 - Distinguish an ambiguous local identity from an unavailable attachment: never guess between equally plausible items, but keep a uniquely resolved parent item's metadata even when no local PDF is accessible.
 - Do not let a weaker internet title match override a confident Zotero hit.
 - Do not invent missing metadata.
-- If a Chinese title is assistant-generated, mark it as a translation.
+- If an English title is assistant-generated from a non-English source title, mark it as a translation.
 - Distinguish:
   - `not found`
   - `not provided by source`

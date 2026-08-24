@@ -212,7 +212,7 @@ def test_build_identity_contract_repairs_filename_only_title_with_arxiv(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    pdf_path = tmp_path / "Smith 等 - 2024 - Noisy Local Filename-123456.pdf"
+    pdf_path = tmp_path / "Smith Wait - 2024 - Noisy Local Filename-123456.pdf"
     identity, trace = build_identity_from_payloads(
         tmp_path,
         monkeypatch,
@@ -223,7 +223,7 @@ def test_build_identity_contract_repairs_filename_only_title_with_arxiv(
             "source_type": "local_pdf",
             "source_url": str(pdf_path),
             "local_pdf_path": str(pdf_path),
-            "title": "Smith 等 - 2024 - Noisy Local Filename-123456",
+            "title": "Smith Wait - 2024 - Noisy Local Filename-123456",
             "local_pdf_title_source": "local_pdf_stem_used",
             "local_pdf_artifact_title": True,
             "metadata_sources": ["local_pdf"],
@@ -249,7 +249,7 @@ def test_build_identity_contract_repairs_filename_only_title_with_arxiv(
     )
 
     assert identity["work_level_identity"]["title"] == (
-        "Smith 等 - 2024 - Noisy Local Filename-123456"
+        "Smith Wait - 2024 - Noisy Local Filename-123456"
     )
     assert identity["work_level_identity"]["arxiv_id"] == ""
     assert trace["repair_attempts"] == []

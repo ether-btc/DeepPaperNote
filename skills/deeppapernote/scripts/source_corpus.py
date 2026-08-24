@@ -58,7 +58,7 @@ def _record_has_appendix_hint(record: dict[str, Any]) -> bool:
     ).lower()
     return any(
         token in searchable
-        for token in ("appendix", "appendices", "supplementary", "附录", "补充材料")
+        for token in ("appendix", "appendices", "supplementary", "Appendix", "Supplementary material")
     )
 
 

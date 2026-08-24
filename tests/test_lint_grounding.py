@@ -140,12 +140,12 @@ def note_plan_with_sources(sources_by_section: dict[str, list[dict] | list[str]]
 def grounded_note_plan() -> dict:
     return note_plan_with_sources(
         {
-            "研究问题": [{"section_id": "sec:introduction"}],
-            "数据与任务定义": [{"pages": [2, 3]}],
-            "方法主线": [{"section_id": "sec:method"}],
-            "关键结果": [{"pages": [7, 9]}],
-            "深度分析": [{"section_id": "sec:experiment"}],
-            "局限": [{"pages": {"start": 10, "end": 12}}],
+            "Research Question": [{"section_id": "sec:introduction"}],
+            "Data and Task Definition": [{"pages": [2, 3]}],
+            "Method Overview": [{"section_id": "sec:method"}],
+            "Key Results": [{"pages": [7, 9]}],
+            "Deep Analysis": [{"section_id": "sec:experiment"}],
+            "Limitations": [{"pages": {"start": 10, "end": 12}}],
         }
     )
 

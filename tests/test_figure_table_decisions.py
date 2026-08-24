@@ -118,14 +118,14 @@ def test_figure_table_decisions_cover_every_caption(tmp_path: Path) -> None:
                 {
                     "id": "Figure 1",
                     "kind": "method_overview",
-                    "section": "方法主线",
+                    "section": "Method Overview",
                     "reason": "method overview",
                     "priority": 1,
                     "figure_asset_candidate": {"candidate_status": "usable_candidate"},
                 },
                 {
                     "id": "Table 1",
-                    "section": "关键结果",
+                    "section": "Key Results",
                     "reason": "main result table",
                     "priority": 2,
                 },
@@ -138,7 +138,7 @@ def test_figure_table_decisions_cover_every_caption(tmp_path: Path) -> None:
 
     assert set(decisions) == {"Figure 1", "Figure 2", "Table 1"}
     assert decisions["Figure 1"]["decision"] == "placeholder"
-    assert decisions["Figure 1"]["target_section"] == "方法主线"
+    assert decisions["Figure 1"]["target_section"] == "Method Overview"
     assert decisions["Table 1"]["decision"] == "placeholder"
     assert decisions["Figure 2"]["decision"] == "low_priority"
     assert payload["summary"]["total_items"] == 3
@@ -174,7 +174,7 @@ def test_figure_table_decisions_cover_source_corpus_captions(tmp_path: Path) -> 
                 {
                     "id": "Fig. 1",
                     "kind": "method_overview",
-                    "section": "方法主线",
+                    "section": "Method Overview",
                     "reason": "method overview",
                     "priority": 1,
                 }
@@ -186,7 +186,7 @@ def test_figure_table_decisions_cover_source_corpus_captions(tmp_path: Path) -> 
     decisions = {item["source_id"]: item for item in payload["decisions"]}
 
     assert set(decisions) == {"Figure 1", "Table 1"}
-    assert decisions["Figure 1"]["target_section"] == "方法主线"
+    assert decisions["Figure 1"]["target_section"] == "Method Overview"
     assert decisions["Table 1"]["decision"] == "low_priority"
     assert decisions["Table 1"]["reason"] == "caption_detected_but_not_selected_by_figure_plan"
 
@@ -203,7 +203,7 @@ def test_figure_table_decisions_fail_closed_on_visual_defect(tmp_path: Path) -> 
             "figures": [
                 {
                     "id": "Figure 3",
-                    "section": "方法主线",
+                    "section": "Method Overview",
                     "priority": 1,
                     "figure_asset_candidate": {"candidate_status": "reject_visual_quality"},
                 }
@@ -243,7 +243,7 @@ def test_figure_table_decisions_require_visual_review_for_usable_candidate(
                 {
                     "id": "Figure 1",
                     "kind": "method_overview",
-                    "section": "方法主线",
+                    "section": "Method Overview",
                     "reason": "system overview",
                     "priority": 1,
                     "figure_asset_candidate": {
@@ -297,7 +297,7 @@ def test_figure_table_decisions_rerender_selected_candidate_at_300_dpi(
                 {
                     "id": "Figure 1",
                     "kind": "method_overview",
-                    "section": "方法主线",
+                    "section": "Method Overview",
                     "priority": 1,
                     "figure_asset_candidate": {
                         "filename": low_res_path.name,
@@ -522,7 +522,7 @@ def test_figure_table_decisions_dedupe_figure_and_fig_variants(tmp_path: Path) -
                 {
                     "id": "Figure 14",
                     "kind": "main_result",
-                    "section": "关键结果",
+                    "section": "Key Results",
                     "reason": "main result",
                     "priority": 2,
                     "figure_asset_candidate": {
@@ -559,7 +559,7 @@ def test_figure_table_decisions_insert_selected_usable_figure_regardless_priorit
                 {
                     "id": "Figure 1",
                     "kind": "data_or_task",
-                    "section": "数据与任务定义",
+                    "section": "Data and Task Definition",
                     "priority": 3,
                     "figure_asset_candidate": {
                         "filename": "page_002_fig_figure_1.png",
@@ -592,7 +592,7 @@ def test_figure_table_decisions_insert_selected_usable_tables(tmp_path: Path) ->
             "figures": [
                 {
                     "id": "Table 2",
-                    "section": "关键结果",
+                    "section": "Key Results",
                     "priority": 1,
                     "figure_asset_candidate": {
                         "filename": "page_005_fig_table_2.png",

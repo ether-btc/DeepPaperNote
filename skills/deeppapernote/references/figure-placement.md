@@ -17,17 +17,17 @@ Priority order:
 
 ## Placement Logic
 
-- Put method overview figures in `### 机制流程` when they directly explain the core execution chain
-- If the match is weaker or the note does not need that micro-structure, keep them in `方法主线`
-- Put data or task figures in `数据与任务定义`
-- Put main result figures or tables in `关键结果`
-- Put conceptual diagrams in `研究问题` or `深度分析` if they clarify the argument
+- Put method overview figures in `### Mechanism Flow` when they directly explain the core execution chain
+- If the match is weaker or the note does not need that micro-structure, keep them in `Method Overview`
+- Put data or task figures in `Data and Task Definition`
+- Put main result figures or tables in `Key Results`
+- Put conceptual diagrams in `Research Question` or `Deep Analysis` if they clarify the argument
 
 ## What to Read
 
 Use:
 - figure captions
-- nearby正文对 figure 的引用
+- nearbytext pair figure ofReferences
 - section context
 - candidate pages and candidate images from deterministic PDF asset extraction
 
@@ -50,8 +50,8 @@ When the contract requires manual inspection, open the actual candidate image be
 
 ## Integrated Placement Rule
 
-Every kept placeholder must be placed directly under the most relevant substantive section named by its `建议位置`.
-Do not collect unresolved placeholders into a catch-all section such as `剩余图表占位`, `未放置图表`, `Remaining figures`, or `Leftover figures`.
+Every kept placeholder must be placed directly under the most relevant substantive section named by its `Suggested Placement`.
+Do not collect unresolved placeholders into a catch-all section such as `Remaining chart space`, `No chart placed`, `Remaining figures`, or `Leftover figures`.
 
 Rejecting an extraction candidate does not by itself require a final-note placeholder. The final placeholder set should come from semantic importance to the note, not from the number of failed extraction candidates.
 

@@ -180,7 +180,7 @@ def is_probable_local_pdf_artifact_title(title: str) -> bool:
         return True
     if LOCAL_PDF_SUFFIX_ID_PATTERN.search(normalized):
         return True
-    return bool(re.search(r"\b(?:et al\.?|等)\b", normalized, flags=re.IGNORECASE) and re.search(r"\b(?:19|20)\d{2}\b", normalized))
+    return bool(re.search(r"\b(?:et al\.?|Wait)\b", normalized, flags=re.IGNORECASE) and re.search(r"\b(?:19|20)\d{2}\b", normalized))
 
 
 def _dedupe_string_list(value: Any) -> list[str]:
@@ -2498,9 +2498,9 @@ DOMAIN_SECTION_ALIASES = {"application_domains": "domains"}
 DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
     "domains": [
         {
-            "label": "医疗健康",
+            "label": "medical health",
             "aliases": ["healthcare", "medical", "clinical medicine"],
-            "specialized_folders": ["心理健康"],
+            "specialized_folders": ["mental health"],
             "keywords": [
                 "clinical",
                 "patient",
@@ -2522,7 +2522,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": [],
         },
         {
-            "label": "法律",
+            "label": "law",
             "aliases": ["legal", "law"],
             "keywords": [
                 "legal",
@@ -2538,7 +2538,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": [],
         },
         {
-            "label": "教育",
+            "label": "education",
             "aliases": ["education", "educational"],
             "keywords": [
                 "education",
@@ -2553,7 +2553,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": [],
         },
         {
-            "label": "金融",
+            "label": "Finance",
             "aliases": ["finance", "financial"],
             "keywords": [
                 "finance",
@@ -2570,7 +2570,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": [],
         },
         {
-            "label": "机器人",
+            "label": "robot",
             "aliases": ["robotics", "robotic"],
             "keywords": [
                 "robot",
@@ -2586,7 +2586,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": ["diffusion policy"],
         },
         {
-            "label": "软件工程",
+            "label": "software engineering",
             "aliases": ["software engineering"],
             "keywords": [
                 "software engineering",
@@ -2602,7 +2602,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": [],
         },
         {
-            "label": "生物医学",
+            "label": "biomedicine",
             "aliases": ["biomedical", "bioinformatics"],
             "keywords": [
                 "biomedical",
@@ -2617,8 +2617,8 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": [],
         },
         {
-            "label": "心理健康",
-            "route_to": "医疗健康",
+            "label": "mental health",
+            "route_to": "medical health",
             "aliases": ["mental health", "psychology", "psychiatry"],
             "keywords": [
                 "depression",
@@ -2633,7 +2633,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": [],
         },
         {
-            "label": "推荐系统",
+            "label": "Recommendation system",
             "aliases": ["recommender systems", "recommendation"],
             "keywords": [
                 "recommendation",
@@ -2647,7 +2647,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
     ],
     "fallback_domains": [
         {
-            "label": "大模型",
+            "label": "large model",
             "aliases": ["llm", "large language model", "language model", "foundation model"],
             "keywords": [
                 "large language model",
@@ -2678,7 +2678,7 @@ DEFAULT_DOMAIN_RULES: dict[str, list[dict[str, Any]]] = {
             "methods": [],
         },
         {
-            "label": "机器学习",
+            "label": "machine learning",
             "aliases": ["machine learning", "ml"],
             "keywords": [
                 "machine learning",
@@ -2971,10 +2971,10 @@ def infer_domain_label(title: str, abstract: str = "") -> str:
 
     paper_type, _ = infer_paper_type(title, abstract)
     if paper_type == "clinical_or_psychology_empirical":
-        return "医疗健康"
+        return "medical health"
     if paper_type == "AI_method":
-        return "机器学习"
-    return "未分类"
+        return "machine learning"
+    return "Uncategorized"
 
 
 def is_probable_paper_folder(path: Path) -> bool:
@@ -3116,7 +3116,7 @@ def split_sentences(text: str) -> list[str]:
     text = re.sub(r"\s+", " ", text or "").strip()
     if not text:
         return []
-    parts = re.split(r"(?<=[.!?。！？])\s+", text)
+    parts = re.split(r"(?<=[.!?\u3002\uff01\uff1f])\s+", text)
     return [part.strip() for part in parts if part.strip()]
 
 
@@ -3135,8 +3135,10 @@ def clean_pdf_line(line: str) -> str:
 
 def normalize_heading(line: str) -> str:
     line = normalize_pdf_text_artifacts(line or "").strip().lower()
-    line = re.sub(r"^\s*(?:section\s*)?\d+(\.\d+)*[\s.、．:：-]*", "", line)
-    line = re.sub(r"^\s*[一二三四五六七八九十百千]+[、．.:\s-]*", "", line)
+    line = re.sub(r"^\s*(?:section\s*)?\d+(\.\d+)*[\s.\u3001\uff0e:\uff1a-]*", "", line)
+    # Retain parse-level tolerance for CJK section-number punctuation without
+    # making CJK headings part of the English output contract.
+    line = re.sub(r"^\s*[\u4e00-\u5343]+[\u3001\uff0e.:\s-]*", "", line)
     line = re.sub(r"^\s*[ivxlcdm]+[.)\s]+", "", line)
     line = re.sub(r"[^a-z0-9\u3400-\u9fff\s]", " ", line)
     line = re.sub(r"(?<=[\u3400-\u9fff])\s+(?=[\u3400-\u9fff])", "", line)
@@ -3144,7 +3146,7 @@ def normalize_heading(line: str) -> str:
 
 
 SECTION_ALIASES = {
-    "abstract": {"abstract", "摘要"},
+    "abstract": {"abstract", "Summary"},
     "introduction": {
         "introduction",
         "background",
@@ -3152,11 +3154,11 @@ SECTION_ALIASES = {
         "preliminary",
         "related work",
         "literature review",
-        "引言",
-        "绪论",
-        "背景",
-        "相关工作",
-        "文献综述",
+        "Introduction",
+        "Introduction",
+        "background",
+        "Related work",
+        "Literature review",
     },
     "method": {
         "method",
@@ -3170,15 +3172,15 @@ SECTION_ALIASES = {
         "materials",
         "materials and methods",
         "study design",
-        "方法",
-        "方法学",
-        "研究方法",
-        "材料与方法",
-        "实验方法",
-        "研究设计",
-        "模型",
-        "框架",
-        "系统设计",
+        "method",
+        "methodology",
+        "research methods",
+        "Materials and methods",
+        "Experimental methods",
+        "research design",
+        "model",
+        "frame",
+        "System design",
     },
     "data": {
         "data",
@@ -3186,9 +3188,9 @@ SECTION_ALIASES = {
         "datasets",
         "corpus",
         "data and materials",
-        "数据",
-        "数据集",
-        "语料库",
+        "data",
+        "Dataset",
+        "corpus",
     },
     "experiment": {
         "experiment",
@@ -3202,15 +3204,15 @@ SECTION_ALIASES = {
         "findings",
         "ablations",
         "ablation",
-        "实验",
-        "实验结果",
-        "结果",
-        "研究结果",
-        "评价",
-        "评估",
-        "分析",
-        "发现",
-        "消融",
+        "experiment",
+        "Experimental results",
+        "result",
+        "Research results",
+        "Evaluation",
+        "Assessment",
+        "analysis",
+        "discover",
+        "ablate",
     },
     "conclusion": {
         "conclusion",
@@ -3220,12 +3222,12 @@ SECTION_ALIASES = {
         "future work",
         "limitations",
         "limitation",
-        "结论",
-        "总结",
-        "讨论",
-        "局限",
-        "不足",
-        "未来工作",
+        "Conclusion",
+        "Summary",
+        "discuss",
+        "Limitations",
+        "Insufficient",
+        "future work",
     },
 }
 
@@ -3237,24 +3239,24 @@ STOP_SECTION_ALIASES = {
     "supplementary material",
     "acknowledgments",
     "acknowledgements",
-    "参考文献",
-    "附录",
-    "补充材料",
-    "致谢",
+    "References",
+    "Appendix",
+    "Supplementary material",
+    "Acknowledgments",
 }
 
 STOP_SECTION_REASONS = {
     "references": "references",
     "bibliography": "references",
-    "参考文献": "references",
+    "References": "references",
     "appendix": "appendix",
     "appendices": "appendix",
     "supplementary material": "appendix",
-    "附录": "appendix",
-    "补充材料": "appendix",
+    "Appendix": "appendix",
+    "Supplementary material": "appendix",
     "acknowledgments": "acknowledgments",
     "acknowledgements": "acknowledgments",
-    "致谢": "acknowledgments",
+    "Acknowledgments": "acknowledgments",
 }
 
 
@@ -3265,7 +3267,7 @@ def match_section_heading(line: str) -> str | None:
     if normalized in STOP_SECTION_ALIASES:
         return "stop"
     for section, aliases in SECTION_ALIASES.items():
-        if normalized in aliases:
+        if normalized in {alias.lower() for alias in aliases}:
             return section
     return None
 
@@ -3628,7 +3630,7 @@ def external_identity_matches(base: dict[str, Any], candidate: dict[str, Any]) -
 
 def normalize_caption_label(label: str) -> str:
     label = normalize_whitespace(label)
-    chinese_match = re.match(r"^(图|表)\s*([A-Z]?\d+[a-z]?)$", label, re.IGNORECASE)
+    chinese_match = re.match(r"^(Figure|table)\s*([A-Z]?\d+[a-z]?)$", label, re.IGNORECASE)
     if chinese_match:
         return f"{chinese_match.group(1)} {chinese_match.group(2)}"
     extended_figure_match = re.match(
@@ -3723,8 +3725,8 @@ def extract_caption_lines(pdf_text: str, kind: str) -> list[dict[str, str]]:
             r"|scheme\.?\s*\d+[a-z]?"
             r"|algorithm\.?\s*\d+[a-z]?"
             r"|fig(?:ure)?\.?\s*[AS]?\d+[a-z]?"
-            r"|图\.?\s*[A-Z]?\d+[a-z]?"
-            r"))(?!\.\d)(?:[:：.。,\s、|—–-]+|$)(.*)$",
+            r"|Figure\.?\s*[A-Z]?\d+[a-z]?"
+            r"))(?!\.\d)(?:[:\uff1a.\u3002,\s\u3001|—–-]+|$)(.*)$",
             re.IGNORECASE,
         )
     else:
@@ -3733,8 +3735,8 @@ def extract_caption_lines(pdf_text: str, kind: str) -> list[dict[str, str]]:
             r"supplementary\s+table\.?\s*\d+[a-z]?"
             r"|extended\s+data\s+table\.?\s*\d+[a-z]?"
             r"|table\.?\s*[AS]?\d+[a-z]?"
-            r"|表\.?\s*[A-Z]?\d+[a-z]?"
-            r"))(?!\.\d)(?:[:：.。,\s、|—–-]+|$)(.*)$",
+            r"|table\.?\s*[A-Z]?\d+[a-z]?"
+            r"))(?!\.\d)(?:[:\uff1a.\u3002,\s\u3001|—–-]+|$)(.*)$",
             re.IGNORECASE,
         )
     for idx, line in enumerate(lines):

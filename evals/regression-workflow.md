@@ -59,7 +59,7 @@ For each paper, the runner must launch an independent Codex CLI session with
 exactly this prompt after replacing placeholders:
 
 ```text
-给这篇论文生成一个深度笔记：<PAPER_TITLE>。笔记保存到<TEMP_VAULT_PATH>中。
+Generate an in-depth note for this paper：<PAPER_TITLE>。Save notes to<TEMP_VAULT_PATH>in。
 ```
 
 Do not add constraints, explanations, source paths, agent instructions, model
@@ -198,7 +198,7 @@ For each selected paper:
 The per-paper child Codex CLI prompt must be exactly:
 
 ```text
-给这篇论文生成一个深度笔记：<PAPER_TITLE>。笔记保存到<TEMP_VAULT_PATH>中。
+Generate an in-depth note for this paper：<PAPER_TITLE>。Save notes to<TEMP_VAULT_PATH>in。
 ```
 
 The runner may control working directory, temp vault, installed skill version,
@@ -230,7 +230,7 @@ Task:
 - For each primary paper, create an isolated run directory and test vault.
 - Sync or install the baseline skill version.
 - For each primary paper, start a separate independent Codex CLI session.
-- In each child Codex CLI session, use exactly this prompt after replacing placeholders: `给这篇论文生成一个深度笔记：<PAPER_TITLE>。笔记保存到<TEMP_VAULT_PATH>中。`
+- In each child Codex CLI session, use exactly this prompt after replacing placeholders: `Generate an in-depth note for this paper：<PAPER_TITLE>。Save notes to<TEMP_VAULT_PATH>in。`
 - Do not add any other text to the child Codex CLI prompt.
 - Preserve raw final notes, runner logs, and all available artifacts.
 - Record the exact child prompt, temp vault path, run directory, final note path, logs, exit status, available artifacts, and missing artifacts.
@@ -271,7 +271,7 @@ The per-paper child Codex CLI prompt must be exactly the same template used by
 the baseline:
 
 ```text
-给这篇论文生成一个深度笔记：<PAPER_TITLE>。笔记保存到<TEMP_VAULT_PATH>中。
+Generate an in-depth note for this paper：<PAPER_TITLE>。Save notes to<TEMP_VAULT_PATH>in。
 ```
 
 ### Candidate Runner Agent Prompt Template
@@ -294,7 +294,7 @@ Task:
 - Sync or install the candidate skill version.
 - For each primary paper, create an isolated candidate run directory and test vault.
 - For each primary paper, start a separate independent Codex CLI session.
-- In each child Codex CLI session, use exactly this prompt after replacing placeholders: `给这篇论文生成一个深度笔记：<PAPER_TITLE>。笔记保存到<TEMP_VAULT_PATH>中。`
+- In each child Codex CLI session, use exactly this prompt after replacing placeholders: `Generate an in-depth note for this paper：<PAPER_TITLE>。Save notes to<TEMP_VAULT_PATH>in。`
 - Do not add any other text to the child Codex CLI prompt.
 - Preserve raw final notes, runner logs, and all available artifacts.
 - Record the exact child prompt, temp vault path, run directory, final note path, logs, exit status, available artifacts, and missing artifacts.

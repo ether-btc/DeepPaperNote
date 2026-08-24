@@ -107,7 +107,7 @@ def test_infer_source_type_for_local_pdf(tmp_path: Path) -> None:
 
 
 def test_clean_local_pdf_stem_removes_zotero_style_noise() -> None:
-    stem = "Xu 等 - 2025 - Identifying psychiatric manifestations in outpatients with depression and anxiety a large language-182952"
+    stem = "Xu Wait - 2025 - Identifying psychiatric manifestations in outpatients with depression and anxiety a large language-182952"
     assert clean_local_pdf_stem(stem) == "Identifying psychiatric manifestations in outpatients with depression and anxiety a large language"
 
 
@@ -115,12 +115,12 @@ def test_normalize_pdf_text_artifacts_expands_ligatures() -> None:
     assert normalize_pdf_text_artifacts("Efﬁcient ﬂow oﬀers aﬃne aﬄuent") == "Efficient flow offers affine affluent"
 
 
-def test_match_section_heading_supports_chinese_and_nonstandard_english_headings() -> None:
-    assert match_section_heading("一、摘要") == "abstract"
-    assert match_section_heading("2 材料与方法") == "method"
-    assert match_section_heading("3. 实验结果") == "experiment"
-    assert match_section_heading("4 结论") == "conclusion"
-    assert match_section_heading("参考文献") == "stop"
+def test_match_section_heading_supports_cjk_punctuation_and_nonstandard_english_headings() -> None:
+    assert match_section_heading("1、Summary") == "abstract"
+    assert match_section_heading("2 Materials and methods") == "method"
+    assert match_section_heading("3. Experimental results") == "experiment"
+    assert match_section_heading("4 Conclusion") == "conclusion"
+    assert match_section_heading("References") == "stop"
     assert match_section_heading("Findings") == "experiment"
     assert match_section_heading("Materials and Methods") == "method"
     assert match_section_heading("Study Design") == "method"
@@ -130,9 +130,9 @@ def test_match_section_heading_supports_chinese_and_nonstandard_english_headings
 def test_extract_caption_lines_supports_chinese_figure_and_table_labels() -> None:
     text = "\n".join(
         [
-            "图 1：总体框架。",
-            "图2 | 消融实验流程",
-            "表 1 实验结果",
+            "Figure 1：overall framework。",
+            "Figure2 | Ablation experiment process",
+            "table 1 Experimental results",
             "Table 2. English baseline",
         ]
     )
@@ -141,11 +141,11 @@ def test_extract_caption_lines_supports_chinese_figure_and_table_labels() -> Non
     table_captions = extract_caption_lines(text, "table")
 
     assert figure_captions[:2] == [
-        {"id": "图 1", "caption": "总体框架。"},
-        {"id": "图 2", "caption": "消融实验流程"},
+        {"id": "Figure 1", "caption": "overall framework。"},
+        {"id": "Figure 2", "caption": "Ablation experiment process"},
     ]
     assert table_captions[:2] == [
-        {"id": "表 1", "caption": "实验结果"},
+        {"id": "table 1", "caption": "Experimental results"},
         {"id": "Table 2", "caption": "English baseline"},
     ]
 
@@ -221,15 +221,15 @@ def test_extract_pdf_sections_supports_chinese_headings(tmp_path: Path, monkeypa
         pages=[
             "\n".join(
                 [
-                    "摘要",
-                    "本文提出一个证据优先的阅读流程。",
-                    "1 引言",
-                    "现有方法容易过度总结。",
-                    "2 材料与方法",
-                    "我们构建了一个分阶段处理管线。",
-                    "3 实验结果",
-                    "该方法在三个数据集上提升明显。",
-                    "参考文献",
+                    "Summary",
+                    "This article proposes an evidence-first reading process。",
+                    "1 Introduction",
+                    "Existing methods tend to overgeneralize。",
+                    "2 Materials and methods",
+                    "We built a staged processing pipeline。",
+                    "3 Experimental results",
+                    "This method has significantly improved on three data sets。",
+                    "References",
                     "[1] Ignored reference.",
                 ]
             )
@@ -239,10 +239,10 @@ def test_extract_pdf_sections_supports_chinese_headings(tmp_path: Path, monkeypa
 
     sections = extract_pdf_sections(pdf_path)
 
-    assert sections["abstract"] == "本文提出一个证据优先的阅读流程。"
-    assert sections["introduction"] == "现有方法容易过度总结。"
-    assert sections["method"] == "我们构建了一个分阶段处理管线。"
-    assert sections["experiment"] == "该方法在三个数据集上提升明显。"
+    assert sections["abstract"] == "This article proposes an evidence-first reading process。"
+    assert sections["introduction"] == "Existing methods tend to overgeneralize。"
+    assert sections["method"] == "We built a staged processing pipeline。"
+    assert sections["experiment"] == "This method has significantly improved on three data sets。"
     assert "conclusion" not in sections
 
 
@@ -407,10 +407,10 @@ def test_local_pdf_good_title_does_not_use_unrelated_external_title() -> None:
 
 
 def test_manifestation_equivalence_accepts_identical_cjk_identity() -> None:
-    title = "双元联盟网络如何影响突破式创新——技术能力与网络惯例的调节作用"
+    title = "How ambidextrous alliance networks influence breakthrough innovation——The moderating role of technical capabilities and network routines"
     decision = common.manifestation_equivalence_decision(
-        {"title": title, "authors": ["朱云鹃"]},
-        {"title": title, "authors": ["朱云鹃"]},
+        {"title": title, "authors": ["Zhu Yunjuan"]},
+        {"title": title, "authors": ["Zhu Yunjuan"]},
     )
 
     evidence = {item["kind"]: item for item in decision["evidence"]}
@@ -421,8 +421,8 @@ def test_manifestation_equivalence_accepts_identical_cjk_identity() -> None:
 
 def test_manifestation_equivalence_rejects_distinct_spaced_cjk_authors() -> None:
     decision = common.manifestation_equivalence_decision(
-        {"title": "完全不同论文", "authors": ["李 云鹃"]},
-        {"title": "深度学习研究一", "authors": ["朱 云鹃"]},
+        {"title": "Completely different papers", "authors": ["\u674e \u4e91\u9e43"]},
+        {"title": "Deep Learning Research 1", "authors": ["\u6731 \u4e91\u9e43"]},
     )
 
     evidence = {item["kind"]: item for item in decision["evidence"]}
@@ -460,15 +460,15 @@ def test_ascii_identity_matching_remains_unchanged() -> None:
 
 
 def test_identity_adjudication_accepts_identical_cjk_author() -> None:
-    title = "双元联盟网络如何影响突破式创新——技术能力与网络惯例的调节作用"
+    title = "How ambidextrous alliance networks influence breakthrough innovation——The moderating role of technical capabilities and network routines"
     decision = common.adjudicate_identity_observations(
-        {"title": title, "authors": ["朱云鹃"], "year": "2026"},
+        {"title": title, "authors": ["Zhu Yunjuan"], "year": "2026"},
         [
             {
                 "provider": "crossref",
                 "record": {
                     "title": title,
-                    "authors": ["朱云鹃"],
+                    "authors": ["Zhu Yunjuan"],
                     "year": "2026",
                 },
             }
@@ -544,8 +544,8 @@ def test_resolve_obsidian_note_path_in_vault_mode(tmp_path: Path) -> None:
         "papers_dir": "Research/Papers",
         "workspace_output_dir": "DeepPaperNote_output",
     }
-    path = resolve_obsidian_note_path(config, title="My Test Paper", subdir="心理健康")
-    assert path == vault / "Research/Papers" / "心理健康" / "My_Test_Paper" / "My_Test_Paper.md"
+    path = resolve_obsidian_note_path(config, title="My Test Paper", subdir="mental health")
+    assert path == vault / "Research/Papers" / "mental health" / "My_Test_Paper" / "My_Test_Paper.md"
 
 
 @pytest.mark.parametrize(
@@ -610,9 +610,9 @@ def test_resolve_obsidian_note_path_avoids_double_slug_when_subdir_already_conta
     path = resolve_obsidian_note_path(
         config,
         title="My Test Paper",
-        subdir="心理健康/My_Test_Paper",
+        subdir="mental health/My_Test_Paper",
     )
-    assert path == vault / "Research/Papers" / "心理健康" / "My_Test_Paper" / "My_Test_Paper.md"
+    assert path == vault / "Research/Papers" / "mental health" / "My_Test_Paper" / "My_Test_Paper.md"
 
 
 def test_resolve_obsidian_note_path_avoids_double_slug_when_subdir_is_papers_relative_path(tmp_path: Path) -> None:
@@ -626,9 +626,9 @@ def test_resolve_obsidian_note_path_avoids_double_slug_when_subdir_is_papers_rel
     path = resolve_obsidian_note_path(
         config,
         title="My Test Paper",
-        subdir="Research/Papers/心理健康/My_Test_Paper",
+        subdir="Research/Papers/mental health/My_Test_Paper",
     )
-    assert path == vault / "Research/Papers" / "心理健康" / "My_Test_Paper" / "My_Test_Paper.md"
+    assert path == vault / "Research/Papers" / "mental health" / "My_Test_Paper" / "My_Test_Paper.md"
 
 
 def test_resolve_obsidian_note_path_avoids_double_folder_when_subdir_is_title_slug_but_filename_is_readable(tmp_path: Path) -> None:
@@ -678,7 +678,7 @@ def test_resolve_obsidian_note_path_accepts_windows_style_papers_relative_subdir
 def test_existing_domain_dirs_excludes_root_level_paper_folder(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     papers = vault / "Research" / "Papers"
-    (papers / "大模型").mkdir(parents=True)
+    (papers / "large model").mkdir(parents=True)
     paper_dir = papers / "Attention_Is_All_You_Need"
     paper_dir.mkdir(parents=True)
     (paper_dir / "Attention_Is_All_You_Need.md").write_text("# note\n", encoding="utf-8")
@@ -688,14 +688,14 @@ def test_existing_domain_dirs_excludes_root_level_paper_folder(tmp_path: Path) -
         "papers_dir": "Research/Papers",
         "workspace_output_dir": "DeepPaperNote_output",
     }
-    assert existing_domain_dirs(config) == ["大模型"]
+    assert existing_domain_dirs(config) == ["large model"]
 
 
 def test_resolve_domain_subdir_prefers_existing_domain(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     papers = vault / "Research" / "Papers"
-    (papers / "大模型").mkdir(parents=True)
-    (papers / "心理健康").mkdir(parents=True)
+    (papers / "large model").mkdir(parents=True)
+    (papers / "mental health").mkdir(parents=True)
     paper_dir = papers / "Attention_Is_All_You_Need"
     paper_dir.mkdir(parents=True)
     (paper_dir / "Attention_Is_All_You_Need.md").write_text("# note\n", encoding="utf-8")
@@ -710,7 +710,7 @@ def test_resolve_domain_subdir_prefers_existing_domain(tmp_path: Path) -> None:
         title="Seeing, Listening, Remembering, and Reasoning: A Multimodal Agent with Long-Term Memory",
         abstract="We present a multimodal large language model agent with long-term memory for reasoning over video and audio.",
     )
-    assert resolved == "大模型"
+    assert resolved == "large model"
 
 
 def test_infer_domain_label_routes_clinical_llm_paper_to_application_domain() -> None:
@@ -718,7 +718,7 @@ def test_infer_domain_label_routes_clinical_llm_paper_to_application_domain() ->
         "Using a fine-tuned large language model for symptom-based depression evaluation",
         "We study clinical depression screening with patients and psychological symptom scales.",
     )
-    assert label == "医疗健康"
+    assert label == "medical health"
 
 
 def test_infer_domain_label_prefers_application_domain_for_legal_rag() -> None:
@@ -726,7 +726,7 @@ def test_infer_domain_label_prefers_application_domain_for_legal_rag() -> None:
         "Retrieval-augmented generation for legal question answering",
         "We combine RAG with a large language model for contract and case law analysis.",
     )
-    assert label == "法律"
+    assert label == "law"
 
 
 def test_infer_domain_label_uses_method_fallback_for_moe_algorithm() -> None:
@@ -734,20 +734,20 @@ def test_infer_domain_label_uses_method_fallback_for_moe_algorithm() -> None:
         "A new mixture-of-experts routing algorithm",
         "Sparse MoE routing improves transformer pretraining efficiency.",
     )
-    assert label == "大模型"
+    assert label == "large model"
 
 
 def test_infer_domain_label_defaults_generic_ai_method_to_machine_learning() -> None:
     assert (
         infer_domain_label("A new optimization algorithm", "We improve model training.")
-        == "机器学习"
+        == "machine learning"
     )
 
 
 def test_resolve_domain_subdir_reuses_specialized_existing_folder(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     papers = vault / "Research" / "Papers"
-    (papers / "心理健康").mkdir(parents=True)
+    (papers / "mental health").mkdir(parents=True)
 
     config = {
         "obsidian_vault": str(vault),
@@ -769,14 +769,14 @@ def test_resolve_domain_subdir_reuses_specialized_existing_folder(tmp_path: Path
             "and mental health outcomes."
         ),
     )
-    assert label == "医疗健康"
-    assert resolved == "心理健康"
+    assert label == "medical health"
+    assert resolved == "mental health"
 
 
 def test_resolve_domain_subdir_keeps_robotics_ahead_of_method_folder(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     papers = vault / "Research" / "Papers"
-    (papers / "大模型").mkdir(parents=True)
+    (papers / "large model").mkdir(parents=True)
 
     config = {
         "obsidian_vault": str(vault),
@@ -791,13 +791,13 @@ def test_resolve_domain_subdir_keeps_robotics_ahead_of_method_folder(tmp_path: P
             "from demonstrations."
         ),
     )
-    assert resolved == "机器人"
+    assert resolved == "robot"
 
 
 def test_method_only_evidence_does_not_reuse_unrelated_application_folder(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     papers = vault / "Research" / "Papers"
-    (papers / "金融").mkdir(parents=True)
+    (papers / "Finance").mkdir(parents=True)
 
     config = {
         "obsidian_vault": str(vault),
@@ -807,14 +807,14 @@ def test_method_only_evidence_does_not_reuse_unrelated_application_folder(tmp_pa
     title = "Efficient Transformer Scaling for Large Language Models"
     abstract = "We improve pre-training, instruction tuning, and reasoning for a foundation model."
 
-    assert domain_name_score("金融", "大模型", title, abstract) == 0
-    assert resolve_domain_subdir(config, title=title, abstract=abstract) == "大模型"
+    assert domain_name_score("Finance", "large model", title, abstract) == 0
+    assert resolve_domain_subdir(config, title=title, abstract=abstract) == "large model"
 
 
 def test_incidental_application_keyword_does_not_reuse_unrelated_folder(tmp_path: Path) -> None:
     vault = tmp_path / "vault"
     papers = vault / "Research" / "Papers"
-    (papers / "金融").mkdir(parents=True)
+    (papers / "Finance").mkdir(parents=True)
 
     config = {
         "obsidian_vault": str(vault),
@@ -824,9 +824,9 @@ def test_incidental_application_keyword_does_not_reuse_unrelated_folder(tmp_path
     title = "Large language models for depression screening"
     abstract = "A clinical patient study mentions risk factors and symptom screening."
 
-    assert infer_domain_label(title, abstract) == "医疗健康"
-    assert domain_name_score("金融", "医疗健康", title, abstract) == 0
-    assert resolve_domain_subdir(config, title=title, abstract=abstract) == "医疗健康"
+    assert infer_domain_label(title, abstract) == "medical health"
+    assert domain_name_score("Finance", "medical health", title, abstract) == 0
+    assert resolve_domain_subdir(config, title=title, abstract=abstract) == "medical health"
 
 
 @pytest.mark.parametrize(
@@ -897,7 +897,7 @@ def test_domain_rules_are_loaded_from_user_editable_yaml(tmp_path: Path, monkeyp
     rules_path.write_text(
         """
 domains:
-  - label: 天文学
+  - label: astronomy
     aliases:
       - astronomy
     keywords:
@@ -906,7 +906,7 @@ domains:
     methods:
       - transformer
 fallback_domains:
-  - label: 机器学习
+  - label: machine learning
     aliases:
       - machine learning
     keywords:
@@ -917,14 +917,14 @@ fallback_domains:
     )
     monkeypatch.setattr(common, "DOMAIN_RULES_PATH", rules_path)
 
-    assert infer_domain_label("Transformer analysis for galaxy survey data") == "天文学"
+    assert infer_domain_label("Transformer analysis for galaxy survey data") == "astronomy"
 
 
 def test_domain_rules_missing_or_invalid_falls_back(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(common, "DOMAIN_RULES_PATH", tmp_path / "missing.yaml")
     assert (
         infer_domain_label("Diffusion Policy for Robot Manipulation", "robotic control")
-        == "机器人"
+        == "robot"
     )
 
     invalid_path = tmp_path / "invalid.yaml"
@@ -932,7 +932,7 @@ def test_domain_rules_missing_or_invalid_falls_back(tmp_path: Path, monkeypatch)
     monkeypatch.setattr(common, "DOMAIN_RULES_PATH", invalid_path)
     assert (
         infer_domain_label("Diffusion Policy for Robot Manipulation", "robotic control")
-        == "机器人"
+        == "robot"
     )
 
 
@@ -1093,7 +1093,7 @@ def test_resolve_reference_local_pdf_artifact_stem_sets_low_identity_confidence(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    pdf_path = tmp_path / "Touvron 等 - 2023 - LLaMA Open and Efficient Foundation Language Models-824666.pdf"
+    pdf_path = tmp_path / "Touvron Wait - 2023 - LLaMA Open and Efficient Foundation Language Models-824666.pdf"
     pdf_path.write_bytes(b"%PDF-1.4")
     fake_doc = FakePdfDoc(metadata={}, pages=["Abstract\nshort"])
     monkeypatch.setattr("common.fitz", FakeFitz(fake_doc))
@@ -1170,13 +1170,13 @@ def test_enrich_metadata_does_not_promote_filename_only_local_pdf(monkeypatch) -
     enriched = enrich_metadata(
         {
             "source_type": "local_pdf",
-            "title": "Touvron 等 - 2023 - LLaMA Open and Efficient Foundation Language Models-824666",
+            "title": "Touvron Wait - 2023 - LLaMA Open and Efficient Foundation Language Models-824666",
             "local_pdf_path": "/tmp/llama.pdf",
             "metadata_sources": ["local_pdf"],
         }
     )
 
-    assert enriched["title"].startswith("Touvron 等 - 2023")
+    assert enriched["title"].startswith("Touvron Wait - 2023")
     assert "doi" not in enriched
     assert "arxiv_id" not in enriched
     assert enriched["metadata_sources"] == ["local_pdf"]
@@ -1203,7 +1203,7 @@ def test_enrich_metadata_keeps_low_confidence_without_independent_local_pdf_evid
     enriched = enrich_metadata(
         {
             "source_type": "local_pdf",
-            "title": "Li 等 - 2025 - A Strong External Metadata Title For Testing-123456",
+            "title": "Li Wait - 2025 - A Strong External Metadata Title For Testing-123456",
             "local_pdf_path": "/tmp/example.pdf",
             "metadata_sources": ["local_pdf"],
             "identity_confidence": "low",
@@ -1211,7 +1211,7 @@ def test_enrich_metadata_keeps_low_confidence_without_independent_local_pdf_evid
         }
     )
 
-    assert enriched["title"].startswith("Li 等 - 2025")
+    assert enriched["title"].startswith("Li Wait - 2025")
     assert enriched["identity_confidence"] == "low"
     assert "local_pdf_artifact_title" in enriched["identity_confidence_reasons"]
 
@@ -1249,13 +1249,13 @@ def test_enrich_metadata_does_not_choose_published_doi_from_filename_only_match(
     enriched = enrich_metadata(
         {
             "source_type": "local_pdf",
-            "title": "Xu 等 - 2025 - Identifying psychiatric manifestations in outpatients with depression and anxiety a large language-182952",
+            "title": "Xu Wait - 2025 - Identifying psychiatric manifestations in outpatients with depression and anxiety a large language-182952",
             "local_pdf_path": "/tmp/mental_health.pdf",
             "metadata_sources": ["local_pdf"],
         }
     )
 
-    assert enriched["title"].startswith("Xu 等 - 2025")
+    assert enriched["title"].startswith("Xu Wait - 2025")
     assert "doi" not in enriched
     assert "venue" not in enriched
 

@@ -53,7 +53,7 @@ def _reference_lines_from_pdf(pdf_path: Path, references_start_page: int, max_pa
                 line = normalize_whitespace(raw_line)
                 if not line:
                     continue
-                if line.lower() in {"references", "bibliography", "参考文献"}:
+                if line.lower() in {"references", "bibliography", "References"}:
                     continue
                 lines.append((line, page_number))
         return lines
