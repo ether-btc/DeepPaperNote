@@ -18,6 +18,7 @@ from __future__ import annotations
 import argparse
 import io
 import re
+import sys
 from pathlib import Path
 
 from common import (
@@ -263,6 +264,32 @@ def ocr_page(page, dpi: int) -> str:
     return normalize_whitespace(pytesseract.image_to_string(image))
 
 
+def _extract_image_alpha_safe(doc, xref: int) -> dict:
+    """Alpha-safe recovery for embedded images ``doc.extract_image`` cannot serve.
+
+    Some PDFs (e.g. AMS Notices typesetting) attach an SMask/soft-alpha channel
+    to raster objects.  ``Document.extract_image`` re-encodes such pixmaps to
+    JPEG and raises ``FzErrorArgument`` ("pixmap may not have alpha").  Render
+    the raw pixmap directly and emit lossless PNG instead, which supports alpha
+    natively.  CMYK sources are converted to RGB first (official recipe) since
+    PNG cannot carry CMYK.
+    """
+    pix = fitz.Pixmap(doc, xref)
+    try:
+        if pix.colorspace is not None and pix.colorspace.n > 3:
+            pix = fitz.Pixmap(fitz.csRGB, pix)
+        return {
+            "image": pix.tobytes("png"),
+            "ext": "png",
+            "width": pix.width,
+            "height": pix.height,
+            "colorspace": pix.colorspace.n if pix.colorspace else 0,
+            "alpha_recovered": True,
+        }
+    finally:
+        pix = None
+
+
 def extract_page_images(doc, page, page_number: int, images_dir: Path) -> list[dict]:
     """Legacy xref-level extraction."""
     assets: list[dict] = []
@@ -274,7 +301,23 @@ def extract_page_images(doc, page, page_number: int, images_dir: Path) -> list[d
         if xref in seen_xrefs:
             continue
         seen_xrefs.add(xref)
-        extracted = doc.extract_image(xref)
+        try:
+            extracted = doc.extract_image(xref)
+        except Exception:
+            # Known failure mode: alpha/SMask image crashes JPEG re-encoding.
+            # Fall back to direct pixmap -> PNG recovery; if even that fails
+            # (e.g. corrupt xref object), skip the object rather than aborting
+            # the whole asset stage -- figure-level caption cropping below
+            # still provides visual coverage for the page.
+            try:
+                extracted = _extract_image_alpha_safe(doc, xref)
+            except Exception as exc:  # pragma: no cover - defensive
+                print(
+                    f"[extract_pdf_assets] skipping unextractable image xref {xref} "
+                    f"on page {page_number}: {exc}",
+                    file=sys.stderr,
+                )
+                continue
         image_bytes = extracted.get("image")
         if not image_bytes:
             continue
