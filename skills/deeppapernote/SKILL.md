@@ -217,6 +217,20 @@ Current status:
 - `scripts/write_obsidian_note.py` can write the final note into a target vault
 - patch the scripts rather than replacing the workflow ad hoc
 
+## Run Pitfalls (first real e2e run on this host, 2026-08-24)
+
+Verified live on Entropy 25(1):60 (`10.3390/e25010060`); all stages completed and saved to vault.
+
+- **Publisher PDFs may bot-block `fetch_pdf.py`** (MDPI/Akamai 403 even with browser UA; PMC viewer serves a JS interstitial). Working fallback: Europe PMC render endpoint `https://europepmc.org/articles/<PMCID>?pdf=render`, then feed a trusted input record (`create_input_record.py --local-pdf-path ...`) built from the pipeline's own metadata artifact — this is priority-1 source per Tool and Source Priority, not a shortcut.
+- **Crossref abstracts can be garbage** (keyword-soup without sentences). The faithful Abstract Translation must come from the PDF preamble text instead; never translate the mangled metadata string.
+- **`build_synthesis_bundle.py` emitted `"language": "zh-CN"` post-adaptation** (fixed to `en-US` on branch `feat/english-output`). If you see zh-CN in a fresh bundle, the installed copy is stale vs the repo — re-sync.
+- **`comparative_positioning` must be an ARRAY of positioning statements** (contracts.py list field), though it reads like prose. A string fails grounding lint as `note_plan_required_field_empty`.
+- **Usable-candidate images cannot stay placeholders**: grounding gate demands either `insert` or `visual_defect` WITH full review evidence — `visual_review` needs ALL 8 contract fields exactly (`revised_bbox` = `[]`, not null), `review_evidence` needs all 8 fields incl. real bbox/preview paths and `render_dpi: 300`, plus item-level `source_image_sha256` matching file bytes. For `visual_defect`, use a terminal reason like `unreadable_source`.
+- **Vision backend down? Use Codex CLI as independent visual reviewer**: `codex exec "<review prompt>" -i img1.png -i img2.png`; require WHAT-sentences proving it saw each image, cross-check descriptions against paper math. Record reviewer = Codex in notes.
+- **Insert embeds go BARE in the note body** (`![alt](images/filename.png)` + italic caption line immediately after). Any `[!figure]` callout wrapping an insert triggers `inserted_figure_redundant_callout`. Callouts are for placeholders only, and their declared Suggested Placement section must equal their physical section.
+- **Mechanism Flow checker wants literal verbs** ("computes", "produces", "maps") plus an input/output token; "Set"/"Convert" fail the action-token scan. 3–4 numbered steps only.
+- **`write_obsidian_note.py` requires the vault directory to exist first** (`mkdir -p <vault>`); otherwise RuntimeError. It re-verifies every insert sha256 at save time.
+
 ## Limits
 
 - If the paper identity is ambiguous, confirm before writing.

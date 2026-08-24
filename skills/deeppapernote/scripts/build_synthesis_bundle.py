@@ -345,7 +345,7 @@ def compact_writing_contract() -> dict:
         analysis_coverage["final_quality_review_checks"]
     )
     return {
-        "language": "zh-CN",
+        "language": "en-US",
         "contract_role": "manifest_quality_contract",
         "canonical_source": (
             "SKILL.md defines the workflow; scripts/contracts.py defines "
