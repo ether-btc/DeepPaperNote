@@ -217,19 +217,22 @@ Current status:
 - `scripts/write_obsidian_note.py` can write the final note into a target vault
 - patch the scripts rather than replacing the workflow ad hoc
 
-## Run Pitfalls (first real e2e run on this host, 2026-08-24)
+## Run Pitfalls (first two real e2e runs on this host, 2026-08-24)
 
-Verified live on Entropy 25(1):60 (`10.3390/e25010060`); all stages completed and saved to vault.
+Verified live on Entropy 25(1):60 (`10.3390/e25010060`) and Bailey/Borwein/López de Prado/Zhu 2014, AMS Notices 61(5) (`10.1090/noti1105`); both runs completed and saved to vault.
 
 - **Publisher PDFs may bot-block `fetch_pdf.py`** (MDPI/Akamai 403 even with browser UA; PMC viewer serves a JS interstitial). Working fallback: Europe PMC render endpoint `https://europepmc.org/articles/<PMCID>?pdf=render`, then feed a trusted input record (`create_input_record.py --local-pdf-path ...`) built from the pipeline's own metadata artifact — this is priority-1 source per Tool and Source Priority, not a shortcut.
 - **Crossref abstracts can be garbage** (keyword-soup without sentences). The faithful Abstract Translation must come from the PDF preamble text instead; never translate the mangled metadata string.
 - **`build_synthesis_bundle.py` emitted `"language": "zh-CN"` post-adaptation** (fixed to `en-US` on branch `feat/english-output`). If you see zh-CN in a fresh bundle, the installed copy is stale vs the repo — re-sync.
 - **`comparative_positioning` must be an ARRAY of positioning statements** (contracts.py list field), though it reads like prose. A string fails grounding lint as `note_plan_required_field_empty`.
 - **Usable-candidate images cannot stay placeholders**: grounding gate demands either `insert` or `visual_defect` WITH full review evidence — `visual_review` needs ALL 8 contract fields exactly (`revised_bbox` = `[]`, not null), `review_evidence` needs all 8 fields incl. real bbox/preview paths and `render_dpi: 300`, plus item-level `source_image_sha256` matching file bytes. For `visual_defect`, use a terminal reason like `unreadable_source`.
-- **Vision backend down? Use Codex CLI as independent visual reviewer**: `codex exec "<review prompt>" -i img1.png -i img2.png`; require WHAT-sentences proving it saw each image, cross-check descriptions against paper math. Record reviewer = Codex in notes.
-- **Insert embeds go BARE in the note body** (`![alt](images/filename.png)` + italic caption line immediately after). Any `[!figure]` callout wrapping an insert triggers `inserted_figure_redundant_callout`. Callouts are for placeholders only, and their declared Suggested Placement section must equal their physical section.
+- **Vision backend down? Use Codex CLI as independent visual reviewer**: `codex exec "<review prompt>" -i img1.png -i img2.png`; require WHAT-sentences proving it saw each image, cross-check descriptions against paper math. Record reviewer = Codex in notes. Also the resolution path when heuristics mass-reject two-column pages (`large_text_block_suspected` rejected ALL 8 figures in run 2): independent visual review can rehabilitate every crop. Spot-check reviewer claims against facts inside the paper — one plausible-sounding tick-range description was hallucinated and excluded.
+- **Insert embeds go BARE in the note body** (`![alt](images/filename.png)` + italic caption line immediately after). Any `[!figure]` callout wrapping an insert triggers `inserted_figure_redundant_callout`. Callouts are for placeholders only, and their declared Suggested Placement section must equal their physical section. The caption must sit on the LITERALLY NEXT line — even one blank line between embed and caption triggers `inserted_figure_missing_caption`.
 - **Mechanism Flow checker wants literal verbs** ("computes", "produces", "maps") plus an input/output token; "Set"/"Convert" fail the action-token scan. 3–4 numbered steps only.
+- **Grounding-claim contract details**: every claim needs an explicit `what_it_does_not_prove`; a `pass` visual review must have EMPTY omitted-elements lists (null or populated fails); and duplicate figure labels across page crops (run 2 had two "Figure 7" assets on one page) make label-keyed evidence resolve to the WRONG image — key evidence by asset filename/source_id and look at the referenced crop before recording it.
+- **Mechanical-artifact lint false-positives on words ending `-related`**: "correlated" matched the translation-artifact regex. Do not fight the regex — rephrase ("serially dependent", "returns carry serial dependence").
 - **`write_obsidian_note.py` requires the vault directory to exist first** (`mkdir -p <vault>`); otherwise RuntimeError. It re-verifies every insert sha256 at save time.
+- **`write_obsidian_note.py --vault` takes the vault ROOT only** — the script appends `Research/Papers/<subdir>/` itself, so passing `.../ObsidianVault/Research/Papers` yields `Research/Papers/Research/Papers/...` (hit in run 2, cleaned up). Omitting `--vault` does NOT refuse: it silently falls back to repo-local `DeepPaperNote_output/`.
 
 ## Limits
 
